@@ -14,8 +14,8 @@ export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://releases.hashicorp.com/
 export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-mongodbatlas_1.11.1
 export TERRAFORM_DOCS_PATH ?= website/docs/r
 
-export BUILD_REGISTRY := 574485109765.dkr.ecr.us-east-1.amazonaws.com/crossplane
-export DOCKER_REGISTRY := 574485109765.dkr.ecr.us-east-1.amazonaws.com/crossplane
+export BUILD_REGISTRY := .dkr.ecr.us-east-1.amazonaws.com/crossplane
+export DOCKER_REGISTRY := .dkr.ecr.us-east-1.amazonaws.com/crossplane
 
 PLATFORMS ?= linux_amd64 linux_arm64
 
