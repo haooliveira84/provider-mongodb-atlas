@@ -1,0 +1,16 @@
+apiVersion: access.mongodbatlas.crossplane.io/v1alpha1
+kind: ListAPIKey
+metadata:
+  annotations:
+    meta.upbound.io/example-id: access/v1alpha1/listapikey
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    apiKeyId: a29120e123cd
+    cidrBlock: 1.2.3.4/32
+    orgId: <ORG-ID>
+
+---
+

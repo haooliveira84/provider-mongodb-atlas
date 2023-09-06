@@ -1,0 +1,18 @@
+apiVersion: mongodbatlas.crossplane.io/v1alpha1
+kind: Organization
+metadata:
+  annotations:
+    meta.upbound.io/example-id: mongodbatlas/v1alpha1/organization
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    description: test API key from Org Creation Test
+    name: testCreateORG
+    orgOwnerId: 6205e5fffff79cde6f
+    roleNames:
+    - ORG_OWNER
+
+---
+

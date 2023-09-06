@@ -1,0 +1,810 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.3
+  creationTimestamp: null
+  name: configurations.alert.mongodbatlas.crossplane.io
+spec:
+  group: alert.mongodbatlas.crossplane.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    - mongodbatlas
+    kind: Configuration
+    listKind: ConfigurationList
+    plural: configurations
+    singular: configuration
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .metadata.annotations.crossplane\.io/external-name
+      name: EXTERNAL-NAME
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Configuration is the Schema for the Configurations API. Provides
+          an Alert Configuration resource.
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ConfigurationSpec defines the desired state of Configuration
+            properties:
+              deletionPolicy:
+                default: Delete
+                description: 'DeletionPolicy specifies what will happen to the underlying
+                  external when this managed resource is deleted - either "Delete"
+                  or "Orphan" the external resource. This field is planned to be deprecated
+                  in favor of the ManagementPolicy field in a future release. Currently,
+                  both could be set independently and non-default values would be
+                  honored if the feature flag is enabled. See the design doc for more
+                  information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223'
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              forProvider:
+                properties:
+                  enabled:
+                    description: It is not required, but If the attribute is omitted,
+                      by default will be false, and the configuration would be disabled.
+                      You must set true to enable the configuration.
+                    type: boolean
+                  eventType:
+                    description: The type of event that will trigger an alert.
+                    type: string
+                  matcher:
+                    items:
+                      properties:
+                        fieldName:
+                          description: Name of the field in the target object to match
+                            on.
+                          type: string
+                        operator:
+                          description: If omitted, the configuration is disabled.
+                          type: string
+                        value:
+                          description: If omitted, the configuration is disabled.
+                          type: string
+                      type: object
+                    type: array
+                  metricThreshold:
+                    additionalProperties:
+                      type: string
+                    description: Threshold value outside of which an alert will be
+                      triggered.
+                    type: object
+                  metricThresholdConfig:
+                    items:
+                      properties:
+                        metricName:
+                          description: Name of the metric to check. The full list
+                            being quite large, please refer to atlas docs here for
+                            general metrics and here for serverless metrics
+                          type: string
+                        mode:
+                          description: This must be set to AVERAGE. Atlas computes
+                            the current metric value as an average.
+                          type: string
+                        operator:
+                          description: If omitted, the configuration is disabled.
+                          type: string
+                        threshold:
+                          description: Threshold value outside of which an alert will
+                            be triggered.
+                          type: number
+                        units:
+                          description: The units for the threshold value. Depends
+                            on the type of metric. Refer to the MongoDB API Alert
+                            Configuration documentation for a list of accepted values.
+                          type: string
+                      type: object
+                    type: array
+                  notification:
+                    items:
+                      properties:
+                        apiTokenSecretRef:
+                          description: Slack API token. Required for the SLACK notifications
+                            type. If the token later becomes invalid, Atlas sends
+                            an email to the project owner and eventually removes the
+                            token.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        channelName:
+                          description: Slack channel name. Required for the SLACK
+                            notifications type.
+                          type: string
+                        datadogApiKeySecretRef:
+                          description: Datadog API Key. Found in the Datadog dashboard.
+                            Required for the DATADOG notifications type.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        datadogRegion:
+                          description: 'Region that indicates which API URL to use.
+                            Accepted regions are: US, EU. The default Datadog region
+                            is US.'
+                          type: string
+                        delayMin:
+                          description: Number of minutes to wait after an alert condition
+                            is detected before sending out the first notification.
+                          type: number
+                        emailAddress:
+                          description: Email address to which alert notifications
+                            are sent. Required for the EMAIL notifications type.
+                          type: string
+                        emailEnabled:
+                          description: Flag indicating email notifications should
+                            be sent. This flag is only valid if type_name is set to
+                            ORG, GROUP, or USER.
+                          type: boolean
+                        intervalMin:
+                          description: Number of minutes to wait between successive
+                            notifications for unacknowledged alerts that are not resolved.
+                            The minimum value is 5. NOTE PAGER_DUTY, VICTOR_OPS, and
+                            OPS_GENIE notifications do not return this value. The
+                            notification interval must be configured and managed within
+                            each external service.
+                          type: number
+                        microsoftTeamsWebhookUrlSecretRef:
+                          description: Microsoft Teams Webhook Uniform Resource Locator
+                            (URL) that MongoDB Cloud needs to send this notification
+                            via Microsoft Teams. Required if type_name is MICROSOFT_TEAMS.
+                            If the URL later becomes invalid, MongoDB Cloud sends
+                            an email to the project owners. If the key remains invalid,
+                            MongoDB Cloud removes it.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        mobileNumber:
+                          description: Mobile number to which alert notifications
+                            are sent. Required for the SMS notifications type.
+                          type: string
+                        opsGenieApiKeySecretRef:
+                          description: Opsgenie API Key. Required for the OPS_GENIE
+                            notifications type. If the key later becomes invalid,
+                            Atlas sends an email to the project owner and eventually
+                            removes the token.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        opsGenieRegion:
+                          description: 'Region that indicates which API URL to use.
+                            Accepted regions are: US ,EU. The default Opsgenie region
+                            is US.'
+                          type: string
+                        roles:
+                          description: 'Optional. One or more roles that receive the
+                            configured alert. If you include this field, Atlas sends
+                            alerts only to users assigned the roles you specify in
+                            the array. If you omit this field, Atlas sends alerts
+                            to users assigned any role. This parameter is only valid
+                            if type_name is set to ORG, GROUP, or USER. Accepted values
+                            are:'
+                          items:
+                            type: string
+                          type: array
+                        serviceKeySecretRef:
+                          description: PagerDuty service key. Required for the PAGER_DUTY
+                            notifications type. If the key later becomes invalid,
+                            Atlas sends an email to the project owner and eventually
+                            removes the key.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        smsEnabled:
+                          description: Flag indicating if text message notifications
+                            should be sent to this user's mobile phone. This flag
+                            is only valid if type_name is set to ORG, GROUP, or USER.
+                          type: boolean
+                        teamId:
+                          description: Unique identifier of a team.
+                          type: string
+                        typeName:
+                          description: 'Type of alert notification. Accepted values
+                            are:'
+                          type: string
+                        username:
+                          description: Name of the Atlas user to which to send notifications.
+                            Only a user in the project that owns the alert configuration
+                            is allowed here. Required for the USER notifications type.
+                          type: string
+                        victorOpsApiKeySecretRef:
+                          description: VictorOps API key. Required for the VICTOR_OPS
+                            notifications type. If the key later becomes invalid,
+                            Atlas sends an email to the project owner and eventually
+                            removes the key.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        victorOpsRoutingKeySecretRef:
+                          description: VictorOps routing key. Optional for the VICTOR_OPS
+                            notifications type. If the key later becomes invalid,
+                            Atlas sends an email to the project owner and eventually
+                            removes the key.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        webhookSecretSecretRef:
+                          description: Optional authentication secret for the WEBHOOK
+                            notifications type.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        webhookUrlSecretRef:
+                          description: Target URL  for the WEBHOOK notifications type.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                      type: object
+                    type: array
+                  projectId:
+                    description: The ID of the project where the alert configuration
+                      will create.
+                    type: string
+                  threshold:
+                    additionalProperties:
+                      type: string
+                    description: Threshold value outside of which an alert will be
+                      triggered.
+                    type: object
+                  thresholdConfig:
+                    items:
+                      properties:
+                        operator:
+                          description: If omitted, the configuration is disabled.
+                          type: string
+                        threshold:
+                          description: Threshold value outside of which an alert will
+                            be triggered.
+                          type: number
+                        units:
+                          description: The units for the threshold value. Depends
+                            on the type of metric. Refer to the MongoDB API Alert
+                            Configuration documentation for a list of accepted values.
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              managementPolicy:
+                default: FullControl
+                description: 'THIS IS AN ALPHA FIELD. Do not use it in production.
+                  It is not honored unless the relevant Crossplane feature flag is
+                  enabled, and may be changed or removed without notice. ManagementPolicy
+                  specifies the level of control Crossplane has over the managed external
+                  resource. This field is planned to replace the DeletionPolicy field
+                  in a future release. Currently, both could be set independently
+                  and non-default values would be honored if the feature flag is enabled.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223'
+                enum:
+                - FullControl
+                - ObserveOnly
+                - OrphanOnDelete
+                type: string
+              providerConfigRef:
+                default:
+                  name: default
+                description: ProviderConfigReference specifies how the provider that
+                  will be used to create, observe, update, and delete this managed
+                  resource should be configured.
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                  policy:
+                    description: Policies for referencing.
+                    properties:
+                      resolution:
+                        default: Required
+                        description: Resolution specifies whether resolution of this
+                          reference is required. The default is 'Required', which
+                          means the reconcile will fail if the reference cannot be
+                          resolved. 'Optional' means this reference will be a no-op
+                          if it cannot be resolved.
+                        enum:
+                        - Required
+                        - Optional
+                        type: string
+                      resolve:
+                        description: Resolve specifies when this reference should
+                          be resolved. The default is 'IfNotPresent', which will attempt
+                          to resolve the reference only when the corresponding field
+                          is not present. Use 'Always' to resolve the reference on
+                          every reconcile.
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        type: string
+                    type: object
+                required:
+                - name
+                type: object
+              providerRef:
+                description: 'ProviderReference specifies the provider that will be
+                  used to create, observe, update, and delete this managed resource.
+                  Deprecated: Please use ProviderConfigReference, i.e. `providerConfigRef`'
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                  policy:
+                    description: Policies for referencing.
+                    properties:
+                      resolution:
+                        default: Required
+                        description: Resolution specifies whether resolution of this
+                          reference is required. The default is 'Required', which
+                          means the reconcile will fail if the reference cannot be
+                          resolved. 'Optional' means this reference will be a no-op
+                          if it cannot be resolved.
+                        enum:
+                        - Required
+                        - Optional
+                        type: string
+                      resolve:
+                        description: Resolve specifies when this reference should
+                          be resolved. The default is 'IfNotPresent', which will attempt
+                          to resolve the reference only when the corresponding field
+                          is not present. Use 'Always' to resolve the reference on
+                          every reconcile.
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        type: string
+                    type: object
+                required:
+                - name
+                type: object
+              publishConnectionDetailsTo:
+                description: PublishConnectionDetailsTo specifies the connection secret
+                  config which contains a name, metadata and a reference to secret
+                  store config to which any connection details for this managed resource
+                  should be written. Connection details frequently include the endpoint,
+                  username, and password required to connect to the managed resource.
+                properties:
+                  configRef:
+                    default:
+                      name: default
+                    description: SecretStoreConfigRef specifies which secret store
+                      config should be used for this ConnectionSecret.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                      policy:
+                        description: Policies for referencing.
+                        properties:
+                          resolution:
+                            default: Required
+                            description: Resolution specifies whether resolution of
+                              this reference is required. The default is 'Required',
+                              which means the reconcile will fail if the reference
+                              cannot be resolved. 'Optional' means this reference
+                              will be a no-op if it cannot be resolved.
+                            enum:
+                            - Required
+                            - Optional
+                            type: string
+                          resolve:
+                            description: Resolve specifies when this reference should
+                              be resolved. The default is 'IfNotPresent', which will
+                              attempt to resolve the reference only when the corresponding
+                              field is not present. Use 'Always' to resolve the reference
+                              on every reconcile.
+                            enum:
+                            - Always
+                            - IfNotPresent
+                            type: string
+                        type: object
+                    required:
+                    - name
+                    type: object
+                  metadata:
+                    description: Metadata is the metadata for connection secret.
+                    properties:
+                      annotations:
+                        additionalProperties:
+                          type: string
+                        description: Annotations are the annotations to be added to
+                          connection secret. - For Kubernetes secrets, this will be
+                          used as "metadata.annotations". - It is up to Secret Store
+                          implementation for others store types.
+                        type: object
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: Labels are the labels/tags to be added to connection
+                          secret. - For Kubernetes secrets, this will be used as "metadata.labels".
+                          - It is up to Secret Store implementation for others store
+                          types.
+                        type: object
+                      type:
+                        description: Type is the SecretType for the connection secret.
+                          - Only valid for Kubernetes Secret Stores.
+                        type: string
+                    type: object
+                  name:
+                    description: Name is the name of the connection secret.
+                    type: string
+                required:
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: WriteConnectionSecretToReference specifies the namespace
+                  and name of a Secret to which any connection details for this managed
+                  resource should be written. Connection details frequently include
+                  the endpoint, username, and password required to connect to the
+                  managed resource. This field is planned to be replaced in a future
+                  release in favor of PublishConnectionDetailsTo. Currently, both
+                  could be set independently and connection details would be published
+                  to both without affecting each other.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                  namespace:
+                    description: Namespace of the secret.
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - forProvider
+            type: object
+            x-kubernetes-validations:
+            - message: eventType is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.eventType)
+            - message: notification is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.notification)
+            - message: projectId is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.projectId)
+          status:
+            description: ConfigurationStatus defines the observed state of Configuration.
+            properties:
+              atProvider:
+                properties:
+                  alertConfigurationId:
+                    description: Unique identifier for the alert configuration.
+                    type: string
+                  created:
+                    description: Timestamp in ISO 8601 date and time format in UTC
+                      when this alert configuration was created.
+                    type: string
+                  enabled:
+                    description: It is not required, but If the attribute is omitted,
+                      by default will be false, and the configuration would be disabled.
+                      You must set true to enable the configuration.
+                    type: boolean
+                  eventType:
+                    description: The type of event that will trigger an alert.
+                    type: string
+                  id:
+                    type: string
+                  matcher:
+                    items:
+                      properties:
+                        fieldName:
+                          description: Name of the field in the target object to match
+                            on.
+                          type: string
+                        operator:
+                          description: If omitted, the configuration is disabled.
+                          type: string
+                        value:
+                          description: If omitted, the configuration is disabled.
+                          type: string
+                      type: object
+                    type: array
+                  metricThreshold:
+                    additionalProperties:
+                      type: string
+                    description: Threshold value outside of which an alert will be
+                      triggered.
+                    type: object
+                  metricThresholdConfig:
+                    items:
+                      properties:
+                        metricName:
+                          description: Name of the metric to check. The full list
+                            being quite large, please refer to atlas docs here for
+                            general metrics and here for serverless metrics
+                          type: string
+                        mode:
+                          description: This must be set to AVERAGE. Atlas computes
+                            the current metric value as an average.
+                          type: string
+                        operator:
+                          description: If omitted, the configuration is disabled.
+                          type: string
+                        threshold:
+                          description: Threshold value outside of which an alert will
+                            be triggered.
+                          type: number
+                        units:
+                          description: The units for the threshold value. Depends
+                            on the type of metric. Refer to the MongoDB API Alert
+                            Configuration documentation for a list of accepted values.
+                          type: string
+                      type: object
+                    type: array
+                  notification:
+                    items:
+                      properties:
+                        channelName:
+                          description: Slack channel name. Required for the SLACK
+                            notifications type.
+                          type: string
+                        datadogRegion:
+                          description: 'Region that indicates which API URL to use.
+                            Accepted regions are: US, EU. The default Datadog region
+                            is US.'
+                          type: string
+                        delayMin:
+                          description: Number of minutes to wait after an alert condition
+                            is detected before sending out the first notification.
+                          type: number
+                        emailAddress:
+                          description: Email address to which alert notifications
+                            are sent. Required for the EMAIL notifications type.
+                          type: string
+                        emailEnabled:
+                          description: Flag indicating email notifications should
+                            be sent. This flag is only valid if type_name is set to
+                            ORG, GROUP, or USER.
+                          type: boolean
+                        intervalMin:
+                          description: Number of minutes to wait between successive
+                            notifications for unacknowledged alerts that are not resolved.
+                            The minimum value is 5. NOTE PAGER_DUTY, VICTOR_OPS, and
+                            OPS_GENIE notifications do not return this value. The
+                            notification interval must be configured and managed within
+                            each external service.
+                          type: number
+                        mobileNumber:
+                          description: Mobile number to which alert notifications
+                            are sent. Required for the SMS notifications type.
+                          type: string
+                        opsGenieRegion:
+                          description: 'Region that indicates which API URL to use.
+                            Accepted regions are: US ,EU. The default Opsgenie region
+                            is US.'
+                          type: string
+                        roles:
+                          description: 'Optional. One or more roles that receive the
+                            configured alert. If you include this field, Atlas sends
+                            alerts only to users assigned the roles you specify in
+                            the array. If you omit this field, Atlas sends alerts
+                            to users assigned any role. This parameter is only valid
+                            if type_name is set to ORG, GROUP, or USER. Accepted values
+                            are:'
+                          items:
+                            type: string
+                          type: array
+                        smsEnabled:
+                          description: Flag indicating if text message notifications
+                            should be sent to this user's mobile phone. This flag
+                            is only valid if type_name is set to ORG, GROUP, or USER.
+                          type: boolean
+                        teamId:
+                          description: Unique identifier of a team.
+                          type: string
+                        teamName:
+                          description: Label for the team that receives this notification.
+                          type: string
+                        typeName:
+                          description: 'Type of alert notification. Accepted values
+                            are:'
+                          type: string
+                        username:
+                          description: Name of the Atlas user to which to send notifications.
+                            Only a user in the project that owns the alert configuration
+                            is allowed here. Required for the USER notifications type.
+                          type: string
+                      type: object
+                    type: array
+                  projectId:
+                    description: The ID of the project where the alert configuration
+                      will create.
+                    type: string
+                  threshold:
+                    additionalProperties:
+                      type: string
+                    description: Threshold value outside of which an alert will be
+                      triggered.
+                    type: object
+                  thresholdConfig:
+                    items:
+                      properties:
+                        operator:
+                          description: If omitted, the configuration is disabled.
+                          type: string
+                        threshold:
+                          description: Threshold value outside of which an alert will
+                            be triggered.
+                          type: number
+                        units:
+                          description: The units for the threshold value. Depends
+                            on the type of metric. Refer to the MongoDB API Alert
+                            Configuration documentation for a list of accepted values.
+                          type: string
+                      type: object
+                    type: array
+                  updated:
+                    description: Timestamp in ISO 8601 date and time format in UTC
+                      when this alert configuration was last updated.
+                    type: string
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: LastTransitionTime is the last time this condition
+                        transitioned from one status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A Message containing details about this condition's
+                        last transition from one status to another, if any.
+                      type: string
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: Type of this condition. At most one of each condition
+                        type may apply to a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

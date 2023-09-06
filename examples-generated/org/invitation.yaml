@@ -1,0 +1,17 @@
+apiVersion: org.mongodbatlas.crossplane.io/v1alpha1
+kind: Invitation
+metadata:
+  annotations:
+    meta.upbound.io/example-id: org/v1alpha1/invitation
+  labels:
+    testing.upbound.io/example-name: test0
+  name: test0
+spec:
+  forProvider:
+    orgId: <ORG-ID>
+    roles:
+    - ORG_OWNER
+    username: test0-acc-username
+
+---
+

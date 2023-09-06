@@ -1,0 +1,39 @@
+apiVersion: mongodbatlas.crossplane.io/v1alpha1
+kind: Project
+metadata:
+  annotations:
+    meta.upbound.io/example-id: mongodbatlas/v1alpha1/project
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    apiKeys:
+    - apiKeyId: 61003b299dda8d54a9d7d10c
+      roleNames:
+      - GROUP_READ_ONLY
+    isCollectDatabaseSpecificsStatisticsEnabled: true
+    isDataExplorerEnabled: true
+    isExtendedStorageSizesEnabled: true
+    isPerformanceAdvisorEnabled: true
+    isRealtimePerformancePanelEnabled: true
+    isSchemaAdvisorEnabled: true
+    limits:
+    - name: atlas.project.deployment.clusters
+      value: 26
+    - name: atlas.project.deployment.nodesPerPrivateLinkRegion
+      value: 51
+    name: project-name
+    orgId: ${data.mongodbatlas_roles_org_id.test.org_id}
+    projectOwnerId: <OWNER_ACCOUNT_ID>
+    teams:
+    - roleNames:
+      - GROUP_OWNER
+      teamId: 5e0fa8c99ccf641c722fe645
+    - roleNames:
+      - GROUP_READ_ONLY
+      - GROUP_DATA_ACCESS_READ_WRITE
+      teamId: 5e1dd7b4f2a30ba80a70cd4rw
+
+---
+

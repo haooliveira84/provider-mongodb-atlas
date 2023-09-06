@@ -12,6 +12,6 @@ import (
 func Configure(p *ujconfig.Provider) {
 	p.AddResourceConfigurator("mongodbatlas_cluster", func(r *ujconfig.Resource) {
 		r.ExternalName = ujconfig.IdentifierFromProvider
-		r.ShortGroup = ""
+		r.ShortGroup = "cluster"
 	})
 }

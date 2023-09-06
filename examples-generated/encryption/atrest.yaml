@@ -1,0 +1,57 @@
+apiVersion: encryption.mongodbatlas.crossplane.io/v1alpha1
+kind: AtRest
+metadata:
+  annotations:
+    meta.upbound.io/example-id: encryption/v1alpha1/atrest
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    awsKmsConfig:
+    - customerMasterKeyIdSecretRef:
+        key: example-key
+        name: example-secret
+        namespace: upbound-system
+      enabled: true
+      region: US_EAST_1
+      roleId: 60815e2fe01a49138a928ebb
+    azureKeyVaultConfig:
+    - azureEnvironment: AZURE
+      clientIdSecretRef:
+        key: example-key
+        name: example-secret
+        namespace: upbound-system
+      enabled: true
+      keyIdentifierSecretRef:
+        key: example-key
+        name: example-secret
+        namespace: upbound-system
+      keyVaultName: EXAMPLEKeyVault
+      resourceGroupName: ExampleRGName
+      secretSecretRef:
+        key: example-key
+        name: example-secret
+        namespace: upbound-system
+      subscriptionIdSecretRef:
+        key: example-key
+        name: example-secret
+        namespace: upbound-system
+      tenantIdSecretRef:
+        key: example-key
+        name: example-secret
+        namespace: upbound-system
+    googleCloudKmsConfig:
+    - enabled: true
+      keyVersionResourceIdSecretRef:
+        key: example-key
+        name: example-secret
+        namespace: upbound-system
+      serviceAccountKeySecretRef:
+        key: example-key
+        name: example-secret
+        namespace: upbound-system
+    projectId: <PROJECT-ID>
+
+---
+

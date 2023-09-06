@@ -1,0 +1,37 @@
+apiVersion: cloud.mongodbatlas.crossplane.io/v1alpha1
+kind: BackupSnapshotExportJob
+metadata:
+  annotations:
+    meta.upbound.io/example-id: cloud/v1alpha1/backupsnapshotexportjob
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    clusterName: '{CLUSTER_NAME}'
+    customData:
+    - key: exported by
+      value: myName
+    exportBucketId: ${mongodbatlas_cloud_backup_snapshot_export_bucket.test.export_bucket_id}
+    projectId: '{PROJECT_ID}'
+    snapshotId: '{SNAPSHOT_ID}'
+
+---
+
+apiVersion: cloud.mongodbatlas.crossplane.io/v1alpha1
+kind: BackupSnapshotExportBucket
+metadata:
+  annotations:
+    meta.upbound.io/example-id: cloud/v1alpha1/backupsnapshotexportjob
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    bucketName: example_bucket
+    cloudProvider: AWS
+    iamRoleId: '{IAM_ROLE_ID}'
+    projectId: '{PROJECT_ID}'
+
+---
+

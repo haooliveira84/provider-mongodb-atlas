@@ -1,0 +1,39 @@
+apiVersion: cloud.mongodbatlas.crossplane.io/v1alpha1
+kind: BackupSnapshotRestoreJob
+metadata:
+  annotations:
+    meta.upbound.io/example-id: cloud/v1alpha1/backupsnapshotrestorejob
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    clusterName: ${mongodbatlas_cloud_provider_snapshot.test.cluster_name}
+    deliveryTypeConfig:
+    - automated: true
+      targetClusterName: MyCluster
+      targetProjectId: 5cf5a45a9ccf6400e60981b6
+    projectId: ${mongodbatlas_cloud_provider_snapshot.test.project_id}
+    snapshotId: ${mongodbatlas_cloud_provider_snapshot.test.snapshot_id}
+
+---
+
+apiVersion: cluster.mongodbatlas.crossplane.io/v1alpha1
+kind: Cluster
+metadata:
+  annotations:
+    meta.upbound.io/example-id: cloud/v1alpha1/backupsnapshotrestorejob
+  labels:
+    testing.upbound.io/example-name: my_cluster
+  name: my-cluster
+spec:
+  forProvider:
+    cloudBackup: true
+    name: MyCluster
+    projectId: 5cf5a45a9ccf6400e60981b6
+    providerInstanceSizeName: M10
+    providerName: AWS
+    providerRegionName: EU_WEST_2
+
+---
+

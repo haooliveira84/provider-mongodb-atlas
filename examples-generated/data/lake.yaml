@@ -1,0 +1,32 @@
+apiVersion: data.mongodbatlas.crossplane.io/v1alpha1
+kind: Lake
+metadata:
+  annotations:
+    meta.upbound.io/example-id: data/v1alpha1/lake
+  labels:
+    testing.upbound.io/example-name: basic_ds
+  name: basic-ds
+spec:
+  forProvider:
+    aws:
+    - roleId: ${mongodbatlas_cloud_provider_access.test.role_id}
+      testS3Bucket: TEST S3 BUCKET NAME
+    projectId: ${mongodbatlas_project.test.id}
+
+---
+
+apiVersion: mongodbatlas.crossplane.io/v1alpha1
+kind: Project
+metadata:
+  annotations:
+    meta.upbound.io/example-id: data/v1alpha1/lake
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    name: NAME OF THE PROJECT
+    orgId: ORGANIZATION ID
+
+---
+

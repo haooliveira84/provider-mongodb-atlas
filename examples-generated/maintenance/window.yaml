@@ -1,0 +1,16 @@
+apiVersion: maintenance.mongodbatlas.crossplane.io/v1alpha1
+kind: Window
+metadata:
+  annotations:
+    meta.upbound.io/example-id: maintenance/v1alpha1/window
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    dayOfWeek: 3
+    hourOfDay: 4
+    projectId: <your-project-id>
+
+---
+

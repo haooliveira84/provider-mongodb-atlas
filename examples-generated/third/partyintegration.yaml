@@ -1,0 +1,18 @@
+apiVersion: third.mongodbatlas.crossplane.io/v1alpha1
+kind: PartyIntegration
+metadata:
+  annotations:
+    meta.upbound.io/example-id: third/v1alpha1/partyintegration
+  labels:
+    testing.upbound.io/example-name: test_flowdock
+  name: test-flowdock
+spec:
+  forProvider:
+    api_token: <API-TOKEN>
+    flow_name: <FLOW-NAME>
+    org_name: <ORG-NAME>
+    projectId: <PROJECT-ID>
+    type: FLOWDOCK
+
+---
+

@@ -8,8 +8,6 @@ import (
 	// Note(turkenh): we are importing this to embed provider schema document
 	_ "embed"
 
-	ujconfig "github.com/upbound/upjet/pkg/config"
-
 	"github.com/haooliveira84/provider-mongodbatlas/config/backup"
 	"github.com/haooliveira84/provider-mongodbatlas/config/cluster"
 	"github.com/haooliveira84/provider-mongodbatlas/config/dbrole"
@@ -17,6 +15,7 @@ import (
 	"github.com/haooliveira84/provider-mongodbatlas/config/organization"
 	"github.com/haooliveira84/provider-mongodbatlas/config/project"
 	"github.com/haooliveira84/provider-mongodbatlas/config/teams"
+	ujconfig "github.com/upbound/upjet/pkg/config"
 )
 
 const (
@@ -33,12 +32,9 @@ var providerMetadata string
 // GetProvider returns provider configuration
 func GetProvider() *ujconfig.Provider {
 	pc := ujconfig.NewProvider([]byte(providerSchema), resourcePrefix, modulePath, []byte(providerMetadata),
-		ujconfig.WithRootGroup("mongodbatlas.upbound.io"),
-		ujconfig.WithIncludeList(ExternalNameConfigured()),
+		ujconfig.WithRootGroup("mongodbatlas.crossplane.io"),
 		ujconfig.WithFeaturesPackage("internal/features"),
-		ujconfig.WithDefaultResourceOptions(
-			ExternalNameConfigurations(),
-		))
+	)
 
 	for _, configure := range []func(provider *ujconfig.Provider){
 		backup.Configure,

@@ -10,15 +10,70 @@ package apis
 import (
 	"k8s.io/apimachinery/pkg/runtime"
 
-	v1alpha1 "github.com/haooliveira84/provider-mongodbatlas/apis/v1alpha1"
+	v1alpha1 "github.com/haooliveira84/provider-mongodbatlas/apis/access/v1alpha1"
+	v1alpha1advanced "github.com/haooliveira84/provider-mongodbatlas/apis/advanced/v1alpha1"
+	v1alpha1alert "github.com/haooliveira84/provider-mongodbatlas/apis/alert/v1alpha1"
+	v1alpha1api "github.com/haooliveira84/provider-mongodbatlas/apis/api/v1alpha1"
+	v1alpha1backup "github.com/haooliveira84/provider-mongodbatlas/apis/backup/v1alpha1"
+	v1alpha1cloud "github.com/haooliveira84/provider-mongodbatlas/apis/cloud/v1alpha1"
+	v1alpha1cluster "github.com/haooliveira84/provider-mongodbatlas/apis/cluster/v1alpha1"
+	v1alpha1custom "github.com/haooliveira84/provider-mongodbatlas/apis/custom/v1alpha1"
+	v1alpha1data "github.com/haooliveira84/provider-mongodbatlas/apis/data/v1alpha1"
+	v1alpha1encryption "github.com/haooliveira84/provider-mongodbatlas/apis/encryption/v1alpha1"
+	v1alpha1event "github.com/haooliveira84/provider-mongodbatlas/apis/event/v1alpha1"
+	v1alpha1federated "github.com/haooliveira84/provider-mongodbatlas/apis/federated/v1alpha1"
+	v1alpha1global "github.com/haooliveira84/provider-mongodbatlas/apis/global/v1alpha1"
+	v1alpha1ldap "github.com/haooliveira84/provider-mongodbatlas/apis/ldap/v1alpha1"
+	v1alpha1maintenance "github.com/haooliveira84/provider-mongodbatlas/apis/maintenance/v1alpha1"
+	v1alpha1mongodbatlas "github.com/haooliveira84/provider-mongodbatlas/apis/mongodbatlas/v1alpha1"
+	v1alpha1network "github.com/haooliveira84/provider-mongodbatlas/apis/network/v1alpha1"
+	v1alpha1online "github.com/haooliveira84/provider-mongodbatlas/apis/online/v1alpha1"
+	v1alpha1org "github.com/haooliveira84/provider-mongodbatlas/apis/org/v1alpha1"
+	v1alpha1private "github.com/haooliveira84/provider-mongodbatlas/apis/private/v1alpha1"
+	v1alpha1privatelink "github.com/haooliveira84/provider-mongodbatlas/apis/privatelink/v1alpha1"
+	v1alpha1project "github.com/haooliveira84/provider-mongodbatlas/apis/project/v1alpha1"
+	v1alpha1search "github.com/haooliveira84/provider-mongodbatlas/apis/search/v1alpha1"
+	v1alpha1serverless "github.com/haooliveira84/provider-mongodbatlas/apis/serverless/v1alpha1"
+	v1alpha1snapshot "github.com/haooliveira84/provider-mongodbatlas/apis/snapshot/v1alpha1"
+	v1alpha1third "github.com/haooliveira84/provider-mongodbatlas/apis/third/v1alpha1"
+	v1alpha1apis "github.com/haooliveira84/provider-mongodbatlas/apis/v1alpha1"
 	v1beta1 "github.com/haooliveira84/provider-mongodbatlas/apis/v1beta1"
+	v1alpha1x509 "github.com/haooliveira84/provider-mongodbatlas/apis/x509/v1alpha1"
 )
 
 func init() {
 	// Register the types with the Scheme so the components can map objects to GroupVersionKinds and back
 	AddToSchemes = append(AddToSchemes,
 		v1alpha1.SchemeBuilder.AddToScheme,
+		v1alpha1advanced.SchemeBuilder.AddToScheme,
+		v1alpha1alert.SchemeBuilder.AddToScheme,
+		v1alpha1api.SchemeBuilder.AddToScheme,
+		v1alpha1backup.SchemeBuilder.AddToScheme,
+		v1alpha1cloud.SchemeBuilder.AddToScheme,
+		v1alpha1cluster.SchemeBuilder.AddToScheme,
+		v1alpha1custom.SchemeBuilder.AddToScheme,
+		v1alpha1data.SchemeBuilder.AddToScheme,
+		v1alpha1encryption.SchemeBuilder.AddToScheme,
+		v1alpha1event.SchemeBuilder.AddToScheme,
+		v1alpha1federated.SchemeBuilder.AddToScheme,
+		v1alpha1global.SchemeBuilder.AddToScheme,
+		v1alpha1ldap.SchemeBuilder.AddToScheme,
+		v1alpha1maintenance.SchemeBuilder.AddToScheme,
+		v1alpha1mongodbatlas.SchemeBuilder.AddToScheme,
+		v1alpha1mongodbatlas.SchemeBuilder.AddToScheme,
+		v1alpha1network.SchemeBuilder.AddToScheme,
+		v1alpha1online.SchemeBuilder.AddToScheme,
+		v1alpha1org.SchemeBuilder.AddToScheme,
+		v1alpha1private.SchemeBuilder.AddToScheme,
+		v1alpha1privatelink.SchemeBuilder.AddToScheme,
+		v1alpha1project.SchemeBuilder.AddToScheme,
+		v1alpha1search.SchemeBuilder.AddToScheme,
+		v1alpha1serverless.SchemeBuilder.AddToScheme,
+		v1alpha1snapshot.SchemeBuilder.AddToScheme,
+		v1alpha1third.SchemeBuilder.AddToScheme,
+		v1alpha1apis.SchemeBuilder.AddToScheme,
 		v1beta1.SchemeBuilder.AddToScheme,
+		v1alpha1x509.SchemeBuilder.AddToScheme,
 	)
 }
 

@@ -1,0 +1,19 @@
+apiVersion: privatelink.mongodbatlas.crossplane.io/v1alpha1
+kind: Endpoint
+metadata:
+  annotations:
+    meta.upbound.io/example-id: privatelink/v1alpha1/endpoint
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    projectId: <PROJECT-ID>
+    providerName: AWS/AZURE
+    region: US_EAST_1
+    timeouts:
+    - create: 30m
+      delete: 20m
+
+---
+

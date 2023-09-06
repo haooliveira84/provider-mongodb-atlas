@@ -1,0 +1,63 @@
+apiVersion: data.mongodbatlas.crossplane.io/v1alpha1
+kind: LakePipeline
+metadata:
+  annotations:
+    meta.upbound.io/example-id: data/v1alpha1/lakepipeline
+  labels:
+    testing.upbound.io/example-name: pipeline
+  name: pipeline
+spec:
+  forProvider:
+    projectId: ${mongodbatlas_project.projectTest.project_id}
+    sink:
+    - partitionFields:
+      - name: access
+        order: 0
+      type: DLS
+    source:
+    - clusterName: cluster-test
+      collectionName: listingsAndReviews
+      databaseName: sample_airbnb
+      type: ON_DEMAND_CPS
+    transformations:
+    - field: test
+      type: EXCLUDE
+    - field: test22
+      type: EXCLUDE
+
+---
+
+apiVersion: advanced.mongodbatlas.crossplane.io/v1alpha1
+kind: Cluster
+metadata:
+  annotations:
+    meta.upbound.io/example-id: data/v1alpha1/lakepipeline
+  labels:
+    testing.upbound.io/example-name: automated_backup_test
+  name: automated-backup-test
+spec:
+  forProvider:
+    cloud_backup: true
+    mongoDbMajorVersion: "6.0"
+    projectId: 63f4d4a47baeac59406dc131
+    provider_instance_size_name: M10
+    provider_name: GCP
+    provider_region_name: US_EAST_4
+
+---
+
+apiVersion: mongodbatlas.crossplane.io/v1alpha1
+kind: Project
+metadata:
+  annotations:
+    meta.upbound.io/example-id: data/v1alpha1/lakepipeline
+  labels:
+    testing.upbound.io/example-name: projectTest
+  name: projecttest
+spec:
+  forProvider:
+    name: NAME OF THE PROJECT
+    orgId: ORGANIZATION ID
+
+---
+

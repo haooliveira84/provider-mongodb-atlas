@@ -1,0 +1,92 @@
+apiVersion: backup.mongodbatlas.crossplane.io/v1alpha1
+kind: CompliancePolicy
+metadata:
+  annotations:
+    meta.upbound.io/example-id: backup/v1alpha1/compliancepolicy
+  labels:
+    testing.upbound.io/example-name: backup_policy
+  name: backup-policy
+spec:
+  forProvider:
+    authorizedEmail: user@email.com
+    copyProtectionEnabled: false
+    encryptionAtRestEnabled: false
+    onDemandPolicyItem:
+    - frequencyInterval: 1
+      retentionUnit: days
+      retentionValue: 3
+    pitEnabled: false
+    policyItemDaily:
+    - frequencyInterval: 1
+      retentionUnit: days
+      retentionValue: 7
+    policyItemHourly:
+    - frequencyInterval: 1
+      retentionUnit: days
+      retentionValue: 7
+    policyItemMonthly:
+    - frequencyInterval: 1
+      retentionUnit: months
+      retentionValue: 12
+    policyItemWeekly:
+    - frequencyInterval: 1
+      retentionUnit: weeks
+      retentionValue: 4
+    projectId: <PROJECT-ID>
+    restoreWindowDays: 7
+
+---
+
+apiVersion: cloud.mongodbatlas.crossplane.io/v1alpha1
+kind: BackupSchedule
+metadata:
+  annotations:
+    meta.upbound.io/example-id: backup/v1alpha1/compliancepolicy
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    clusterName: clusterTest
+    policyItemDaily:
+    - frequencyInterval: 1
+      retentionUnit: days
+      retentionValue: 7
+    policyItemHourly:
+    - frequencyInterval: 1
+      retentionUnit: days
+      retentionValue: 7
+    policyItemMonthly:
+    - frequencyInterval: 1
+      retentionUnit: months
+      retentionValue: 12
+    policyItemWeekly:
+    - frequencyInterval: 1
+      retentionUnit: weeks
+      retentionValue: 4
+    projectId: <PROJECT-ID>
+    referenceHourOfDay: 3
+    referenceMinuteOfHour: 45
+    restoreWindowDays: 4
+
+---
+
+apiVersion: cluster.mongodbatlas.crossplane.io/v1alpha1
+kind: Cluster
+metadata:
+  annotations:
+    meta.upbound.io/example-id: backup/v1alpha1/compliancepolicy
+  labels:
+    testing.upbound.io/example-name: my_cluster
+  name: my-cluster
+spec:
+  forProvider:
+    cloudBackup: true
+    name: clusterTest
+    projectId: <PROJECT-ID>
+    providerInstanceSizeName: M10
+    providerName: AWS
+    providerRegionName: EU_CENTRAL_1
+
+---
+

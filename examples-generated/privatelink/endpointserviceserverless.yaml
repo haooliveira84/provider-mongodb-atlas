@@ -1,0 +1,35 @@
+apiVersion: privatelink.mongodbatlas.crossplane.io/v1alpha1
+kind: EndpointServiceServerless
+metadata:
+  annotations:
+    meta.upbound.io/example-id: privatelink/v1alpha1/endpointserviceserverless
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    cloudProviderEndpointId: ${aws_vpc_endpoint.ptfe_service.id}
+    comment: New serverless endpoint
+    endpointId: ${mongodbatlas_privatelink_endpoint_serverless.test.endpoint_id}
+    instanceName: ${mongodbatlas_serverless_instance.test.name}
+    projectId: <PROJECT_ID>
+    providerName: AWS
+
+---
+
+apiVersion: privatelink.mongodbatlas.crossplane.io/v1alpha1
+kind: EndpointServerless
+metadata:
+  annotations:
+    meta.upbound.io/example-id: privatelink/v1alpha1/endpointserviceserverless
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    instanceName: test-db
+    projectId: <PROJECT_ID>
+    providerName: AWS
+
+---
+

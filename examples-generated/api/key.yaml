@@ -1,0 +1,17 @@
+apiVersion: api.mongodbatlas.crossplane.io/v1alpha1
+kind: Key
+metadata:
+  annotations:
+    meta.upbound.io/example-id: api/v1alpha1/key
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    description: key-name
+    orgId: <ORG_ID>
+    roleNames:
+    - ORG_READ_ONLY
+
+---
+

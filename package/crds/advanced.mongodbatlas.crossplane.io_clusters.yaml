@@ -1,0 +1,1384 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.3
+  creationTimestamp: null
+  name: clusters.advanced.mongodbatlas.crossplane.io
+spec:
+  group: advanced.mongodbatlas.crossplane.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    - mongodbatlas
+    kind: Cluster
+    listKind: ClusterList
+    plural: clusters
+    singular: cluster
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .metadata.annotations.crossplane\.io/external-name
+      name: EXTERNAL-NAME
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Cluster is the Schema for the Clusters API. Provides an Advanced
+          Cluster resource.
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterSpec defines the desired state of Cluster
+            properties:
+              deletionPolicy:
+                default: Delete
+                description: 'DeletionPolicy specifies what will happen to the underlying
+                  external when this managed resource is deleted - either "Delete"
+                  or "Orphan" the external resource. This field is planned to be deprecated
+                  in favor of the ManagementPolicy field in a future release. Currently,
+                  both could be set independently and non-default values would be
+                  honored if the feature flag is enabled. See the design doc for more
+                  information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223'
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              forProvider:
+                properties:
+                  advancedConfiguration:
+                    items:
+                      properties:
+                        defaultReadConcern:
+                          description: Default level of acknowledgment requested from
+                            MongoDB for read operations set for this cluster. MongoDB
+                            4.4 clusters default to available.
+                          type: string
+                        defaultWriteConcern:
+                          description: Default level of acknowledgment requested from
+                            MongoDB for write operations set for this cluster. MongoDB
+                            4.4 clusters default to 1.
+                          type: string
+                        failIndexKeyTooLong:
+                          description: When true, documents can only be updated or
+                            inserted if, for all indexed fields on the target collection,
+                            the corresponding index entries do not exceed 1024 bytes.
+                            When false, mongod writes documents that exceed the limit
+                            but does not index them.
+                          type: boolean
+                        javascriptEnabled:
+                          description: When true, the cluster allows execution of
+                            operations that perform server-side executions of JavaScript.
+                            When false, the cluster disables execution of those operations.
+                          type: boolean
+                        minimumEnabledTlsProtocol:
+                          description: 'Sets the minimum Transport Layer Security
+                            (TLS) version the cluster accepts for incoming connections.Valid
+                            values are:'
+                          type: string
+                        noTableScan:
+                          description: When true, the cluster disables the execution
+                            of any query that requires a collection scan to return
+                            results. When false, the cluster allows the execution
+                            of those operations.
+                          type: boolean
+                        oplogMinRetentionHours:
+                          description: Minimum retention window for cluster's oplog
+                            expressed in hours. A value of null indicates that the
+                            cluster uses the default minimum oplog window that MongoDB
+                            Cloud calculates.
+                          type: number
+                        oplogSizeMb:
+                          description: The custom oplog size of the cluster. Without
+                            a value that indicates that the cluster uses the default
+                            oplog size calculated by Atlas.
+                          type: number
+                        sampleRefreshIntervalBiConnector:
+                          description: Interval in seconds at which the mongosqld
+                            process re-samples data to create its relational schema.
+                            The default value is 300. The specified value must be
+                            a positive integer. Available only for Atlas deployments
+                            in which BI Connector for Atlas is enabled.
+                          type: number
+                        sampleSizeBiConnector:
+                          description: Number of documents per database to sample
+                            when gathering schema information. Defaults to 100. Available
+                            only for Atlas deployments in which BI Connector for Atlas
+                            is enabled.
+                          type: number
+                        transactionLifetimeLimitSeconds:
+                          description: Lifetime, in seconds, of multi-document transactions.
+                            Defaults to 60 seconds.
+                          type: number
+                      type: object
+                    type: array
+                  backupEnabled:
+                    description: Flag that indicates whether the cluster can perform
+                      backups. If true, the cluster can perform backups. You must
+                      set this value to true for NVMe clusters.
+                    type: boolean
+                  biConnector:
+                    items:
+                      properties:
+                        enabled:
+                          description: Specifies whether or not BI Connector for Atlas
+                            is enabled on the cluster.l
+                          type: boolean
+                        readPreference:
+                          description: Specifies the read preference to be used by
+                            BI Connector for Atlas on the cluster. Each BI Connector
+                            for Atlas read preference contains a distinct combination
+                            of readPreference and readPreferenceTags options. For
+                            details on BI Connector for Atlas read preferences, refer
+                            to the BI Connector Read Preferences Table.
+                          type: string
+                      type: object
+                    type: array
+                  biConnectorConfig:
+                    description: Configuration settings applied to BI Connector for
+                      Atlas on this cluster. The MongoDB Connector for Business Intelligence
+                      for Atlas (BI Connector) is only available for M10 and larger
+                      clusters. The BI Connector is a powerful tool which provides
+                      users SQL-based access to their MongoDB databases. As a result,
+                      the BI Connector performs operations which may be CPU and memory
+                      intensive. Given the limited hardware resources on M10 and M20
+                      cluster tiers, you may experience performance degradation of
+                      the cluster when enabling the BI Connector. If this occurs,
+                      upgrade to an M30 or larger cluster or disable the BI Connector.
+                      See below.
+                    items:
+                      properties:
+                        enabled:
+                          description: Specifies whether or not BI Connector for Atlas
+                            is enabled on the cluster.l
+                          type: boolean
+                        readPreference:
+                          description: Specifies the read preference to be used by
+                            BI Connector for Atlas on the cluster. Each BI Connector
+                            for Atlas read preference contains a distinct combination
+                            of readPreference and readPreferenceTags options. For
+                            details on BI Connector for Atlas read preferences, refer
+                            to the BI Connector Read Preferences Table.
+                          type: string
+                      type: object
+                    type: array
+                  clusterType:
+                    description: Atlas provides different instance sizes, each with
+                      a default storage capacity and RAM size. The instance size you
+                      select is used for all the data-bearing servers in your cluster.
+                      See Create a Cluster providerSettings.instanceSizeName for valid
+                      values and default resources.
+                    type: string
+                  diskSizeGb:
+                    description: Capacity, in gigabytes, of the host's root volume.
+                      Increase this number to add capacity, up to a maximum possible
+                      value of 4096 (i.e., 4 TB). This value must be a positive number.
+                      You can't set this value with clusters with local NVMe SSDs.
+                      The minimum disk size for dedicated clusters is 10 GB for AWS
+                      and GCP. If you specify diskSizeGB with a lower disk size, Atlas
+                      defaults to the minimum disk size value. If your cluster includes
+                      Azure nodes, this value must correspond to an existing Azure
+                      disk type (8, 16, 32, 64, 128, 256, 512, 1024, 2048, or 4095)Atlas
+                      calculates storage charges differently depending on whether
+                      you choose the default value or a custom value. The maximum
+                      value for disk storage cannot exceed 50 times the maximum RAM
+                      for the selected cluster. If you require additional storage
+                      space beyond this limitation, consider upgrading your cluster
+                      to a higher tier. If your cluster spans cloud service providers,
+                      this value defaults to the minimum default of the providers
+                      involved.
+                    type: number
+                  encryptionAtRestProvider:
+                    description: Possible values are AWS, GCP, AZURE or NONE.  Only
+                      needed if you desire to manage the keys, see Encryption at Rest
+                      using Customer Key Management for complete documentation.  You
+                      must configure encryption at rest for the Atlas project before
+                      enabling it on any cluster in the project. For Documentation,
+                      see AWS, GCP and Azure. Requirements are if replication_specs.#.region_configs.#.<type>Specs.instance_size
+                      is M10 or greater and backup_enabled is false or omitted.
+                    type: string
+                  labels:
+                    description: Configuration for the collection of key-value pairs
+                      that tag and categorize the cluster. See below.
+                    items:
+                      properties:
+                        key:
+                          description: The key that you want to write.
+                          type: string
+                        value:
+                          description: The value that you want to write.
+                          type: string
+                      type: object
+                    type: array
+                  mongoDbMajorVersion:
+                    description: 'Version of the cluster to deploy. Atlas supports
+                      the following MongoDB versions for M10+ clusters: 4.0, 4.2,
+                      4.4, or 5.0. If omitted, Atlas deploys a cluster that runs MongoDB
+                      4.4. If replication_specs#.region_configs#.<type>Specs.instance_size:
+                      M0, M2 or M5, Atlas deploys MongoDB 4.4. Atlas always deploys
+                      the cluster with the latest stable release of the specified
+                      version.  If you set a value to this parameter and set version_release_system
+                      CONTINUOUS, the resource returns an error. Either clear this
+                      parameter or set version_release_system: LTS.'
+                    type: string
+                  paused:
+                    description: 'Flag that indicates whether the cluster is paused
+                      or not. You can pause M10 or larger clusters.  You cannot initiate
+                      pausing for a shared/tenant tier cluster.  See Considerations
+                      for Paused Clusters NOTE Pause lasts for up to 30 days. If you
+                      don''t resume the cluster within 30 days, Atlas resumes the
+                      cluster.   If you prefer to allow the automated change of state
+                      to unpaused use: lifecycle { ignore_changes = [paused] }'
+                    type: boolean
+                  pitEnabled:
+                    description: '- Flag that indicates if the cluster uses Continuous
+                      Cloud Backup.'
+                    type: boolean
+                  projectId:
+                    description: Unique ID for the project to create the database
+                      user.
+                    type: string
+                  replicationSpecs:
+                    description: Configuration for cluster regions and the hardware
+                      provisioned in them. See below
+                    items:
+                      properties:
+                        numShards:
+                          description: Provide this value if you set a cluster_type
+                            of SHARDED or GEOSHARDED. Omit this value if you selected
+                            a cluster_type of REPLICASET. This API resource accepts
+                            1 through 50, inclusive. This parameter defaults to 1.
+                            If you specify a num_shards value of 1 and a cluster_type
+                            of SHARDED, Atlas deploys a single-shard sharded cluster.
+                            Don't create a sharded cluster with a single shard for
+                            production environments. Single-shard sharded clusters
+                            don't provide the same benefits as multi-shard configurations.
+                          type: number
+                        regionConfigs:
+                          description: Configuration for the hardware specifications
+                            for nodes set for a given regionEach region_configs object
+                            describes the region's priority in elections and the number
+                            and type of MongoDB nodes that Atlas deploys to the region.
+                            Each region_configs object must have either an analytics_specs
+                            object, electable_specs object, or read_only_specs object.
+                            See below
+                          items:
+                            properties:
+                              analyticsAutoScaling:
+                                description: Configuration for the Collection of settings
+                                  that configures analytics-auto-scaling information
+                                  for the cluster. The values for the analytics_auto_scaling
+                                  parameter must be the same for every item in the
+                                  replication_specs array. See below
+                                items:
+                                  properties:
+                                    computeEnabled:
+                                      description: Flag that indicates whether instance
+                                        size auto-scaling is enabled. This parameter
+                                        defaults to false.
+                                      type: boolean
+                                    computeMaxInstanceSize:
+                                      description: Maximum instance size to which
+                                        your cluster can automatically scale (such
+                                        as M40). Atlas requires this parameter if
+                                        replication_specs.#.region_configs.#.auto_scaling.0.compute_enabled
+                                        is true.
+                                      type: string
+                                    computeMinInstanceSize:
+                                      description: Minimum instance size to which
+                                        your cluster can automatically scale (such
+                                        as M10). Atlas requires this parameter if
+                                        replication_specs.#.region_configs.#.auto_scaling.0.compute_scale_down_enabled
+                                        is true.
+                                      type: string
+                                    computeScaleDownEnabled:
+                                      description: 'Flag that indicates whether the
+                                        instance size may scale down. Atlas requires
+                                        this parameter if replication_specs.#.region_configs.#.auto_scaling.0.compute_enabled
+                                        : true. If you enable this option, specify
+                                        a value for replication_specs.#.region_configs.#.auto_scaling.0.compute_min_instance_size.'
+                                      type: boolean
+                                    diskGbEnabled:
+                                      description: Flag that indicates whether this
+                                        cluster enables disk auto-scaling. This parameter
+                                        defaults to true.
+                                      type: boolean
+                                  type: object
+                                type: array
+                              analyticsSpecs:
+                                description: Hardware specifications for analytics
+                                  nodes needed in the region. Analytics nodes handle
+                                  analytic data such as reporting queries from BI
+                                  Connector for Atlas. Analytics nodes are read-only
+                                  and can never become the primary. If you don't specify
+                                  this parameter, no analytics nodes deploy to this
+                                  region. See below
+                                items:
+                                  properties:
+                                    diskIops:
+                                      description: Target throughput (IOPS) desired
+                                        for AWS storage attached to your cluster.
+                                        Set only if you selected AWS as your cloud
+                                        service provider. You can't set this parameter
+                                        for a multi-cloud cluster.
+                                      type: number
+                                    ebsVolumeType:
+                                      description: 'Type of storage you want to attach
+                                        to your AWS-provisioned cluster. Set only
+                                        if you selected AWS as your cloud service
+                                        provider. You can''t set this parameter for
+                                        a multi-cloud cluster. Valid values are:'
+                                      type: string
+                                    instanceSize:
+                                      description: Hardware specification for the
+                                        instance sizes in this region. Each instance
+                                        size has a default storage and memory capacity.
+                                        The instance size you select applies to all
+                                        the data-bearing hosts in your instance size.
+                                      type: string
+                                    nodeCount:
+                                      description: Number of nodes of the given type
+                                        for MongoDB Atlas to deploy to the region.
+                                      type: number
+                                  required:
+                                  - instanceSize
+                                  type: object
+                                type: array
+                              autoScaling:
+                                description: Configuration for the Collection of settings
+                                  that configures auto-scaling information for the
+                                  cluster. The values for the auto_scaling parameter
+                                  must be the same for every item in the replication_specs
+                                  array. See below
+                                items:
+                                  properties:
+                                    computeEnabled:
+                                      description: Flag that indicates whether instance
+                                        size auto-scaling is enabled. This parameter
+                                        defaults to false.
+                                      type: boolean
+                                    computeMaxInstanceSize:
+                                      description: Maximum instance size to which
+                                        your cluster can automatically scale (such
+                                        as M40). Atlas requires this parameter if
+                                        replication_specs.#.region_configs.#.auto_scaling.0.compute_enabled
+                                        is true.
+                                      type: string
+                                    computeMinInstanceSize:
+                                      description: Minimum instance size to which
+                                        your cluster can automatically scale (such
+                                        as M10). Atlas requires this parameter if
+                                        replication_specs.#.region_configs.#.auto_scaling.0.compute_scale_down_enabled
+                                        is true.
+                                      type: string
+                                    computeScaleDownEnabled:
+                                      description: 'Flag that indicates whether the
+                                        instance size may scale down. Atlas requires
+                                        this parameter if replication_specs.#.region_configs.#.auto_scaling.0.compute_enabled
+                                        : true. If you enable this option, specify
+                                        a value for replication_specs.#.region_configs.#.auto_scaling.0.compute_min_instance_size.'
+                                      type: boolean
+                                    diskGbEnabled:
+                                      description: Flag that indicates whether this
+                                        cluster enables disk auto-scaling. This parameter
+                                        defaults to true.
+                                      type: boolean
+                                  type: object
+                                type: array
+                              backingProviderName:
+                                description: Cloud service provider on which you provision
+                                  the host for a multi-tenant cluster. Use this only
+                                  when a provider_name is TENANT and instance_size
+                                  of a specs is M2 or M5.
+                                type: string
+                              electableSpecs:
+                                description: Hardware specifications for electable
+                                  nodes in the region. Electable nodes can become
+                                  the primary and can enable local reads. If you do
+                                  not specify this option, no electable nodes are
+                                  deployed to the region. See below
+                                items:
+                                  properties:
+                                    diskIops:
+                                      description: Target throughput (IOPS) desired
+                                        for AWS storage attached to your cluster.
+                                        Set only if you selected AWS as your cloud
+                                        service provider. You can't set this parameter
+                                        for a multi-cloud cluster.
+                                      type: number
+                                    ebsVolumeType:
+                                      description: 'Type of storage you want to attach
+                                        to your AWS-provisioned cluster. Set only
+                                        if you selected AWS as your cloud service
+                                        provider. You can''t set this parameter for
+                                        a multi-cloud cluster. Valid values are:'
+                                      type: string
+                                    instanceSize:
+                                      description: Hardware specification for the
+                                        instance sizes in this region. Each instance
+                                        size has a default storage and memory capacity.
+                                        The instance size you select applies to all
+                                        the data-bearing hosts in your instance size.
+                                      type: string
+                                    nodeCount:
+                                      description: Number of nodes of the given type
+                                        for MongoDB Atlas to deploy to the region.
+                                      type: number
+                                  required:
+                                  - instanceSize
+                                  type: object
+                                type: array
+                              priority:
+                                description: Election priority of the region. For
+                                  regions with only read-only nodes, set this value
+                                  to 0.
+                                type: number
+                              providerName:
+                                description: 'Cloud service provider on which the
+                                  servers are provisioned. The possible values are:'
+                                type: string
+                              readOnlySpecs:
+                                description: Hardware specifications for read-only
+                                  nodes in the region. Read-only nodes can become
+                                  the primary and can enable local reads. If you don't
+                                  specify this parameter, no read-only nodes are deployed
+                                  to the region. See below
+                                items:
+                                  properties:
+                                    diskIops:
+                                      description: Target throughput (IOPS) desired
+                                        for AWS storage attached to your cluster.
+                                        Set only if you selected AWS as your cloud
+                                        service provider. You can't set this parameter
+                                        for a multi-cloud cluster.
+                                      type: number
+                                    ebsVolumeType:
+                                      description: 'Type of storage you want to attach
+                                        to your AWS-provisioned cluster. Set only
+                                        if you selected AWS as your cloud service
+                                        provider. You can''t set this parameter for
+                                        a multi-cloud cluster. Valid values are:'
+                                      type: string
+                                    instanceSize:
+                                      description: Hardware specification for the
+                                        instance sizes in this region. Each instance
+                                        size has a default storage and memory capacity.
+                                        The instance size you select applies to all
+                                        the data-bearing hosts in your instance size.
+                                      type: string
+                                    nodeCount:
+                                      description: Number of nodes of the given type
+                                        for MongoDB Atlas to deploy to the region.
+                                      type: number
+                                  required:
+                                  - instanceSize
+                                  type: object
+                                type: array
+                              regionName:
+                                description: Physical location of your MongoDB cluster.
+                                  The region you choose can affect network latency
+                                  for clients accessing your databases.  Requires
+                                  the Atlas region name, see the reference list for
+                                  AWS, GCP, Azure.
+                                type: string
+                            required:
+                            - priority
+                            - providerName
+                            - regionName
+                            type: object
+                          type: array
+                        zoneName:
+                          description: Name for the zone in a Global Cluster.
+                          type: string
+                      required:
+                      - regionConfigs
+                      type: object
+                    type: array
+                  retainBackupsEnabled:
+                    description: Set to true to retain backup snapshots for the deleted
+                      cluster. M10 and above only. Flag that indicates whether to
+                      retain backup snapshots for the deleted dedicated cluster
+                    type: boolean
+                  rootCertType:
+                    description: '- Certificate Authority that MongoDB Atlas clusters
+                      use. You can specify ISRGROOTX1 (for ISRG Root X1).'
+                    type: string
+                  terminationProtectionEnabled:
+                    description: Flag that indicates whether termination protection
+                      is enabled on the cluster. If set to true, MongoDB Cloud won't
+                      delete the cluster. If set to false, MongoDB Cloud will delete
+                      the cluster.
+                    type: boolean
+                  versionReleaseSystem:
+                    description: '- Release cadence that Atlas uses for this cluster.
+                      This parameter defaults to LTS. If you set this field to CONTINUOUS,
+                      you must omit the mongo_db_major_version field. Atlas accepts:'
+                    type: string
+                type: object
+              managementPolicy:
+                default: FullControl
+                description: 'THIS IS AN ALPHA FIELD. Do not use it in production.
+                  It is not honored unless the relevant Crossplane feature flag is
+                  enabled, and may be changed or removed without notice. ManagementPolicy
+                  specifies the level of control Crossplane has over the managed external
+                  resource. This field is planned to replace the DeletionPolicy field
+                  in a future release. Currently, both could be set independently
+                  and non-default values would be honored if the feature flag is enabled.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223'
+                enum:
+                - FullControl
+                - ObserveOnly
+                - OrphanOnDelete
+                type: string
+              providerConfigRef:
+                default:
+                  name: default
+                description: ProviderConfigReference specifies how the provider that
+                  will be used to create, observe, update, and delete this managed
+                  resource should be configured.
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                  policy:
+                    description: Policies for referencing.
+                    properties:
+                      resolution:
+                        default: Required
+                        description: Resolution specifies whether resolution of this
+                          reference is required. The default is 'Required', which
+                          means the reconcile will fail if the reference cannot be
+                          resolved. 'Optional' means this reference will be a no-op
+                          if it cannot be resolved.
+                        enum:
+                        - Required
+                        - Optional
+                        type: string
+                      resolve:
+                        description: Resolve specifies when this reference should
+                          be resolved. The default is 'IfNotPresent', which will attempt
+                          to resolve the reference only when the corresponding field
+                          is not present. Use 'Always' to resolve the reference on
+                          every reconcile.
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        type: string
+                    type: object
+                required:
+                - name
+                type: object
+              providerRef:
+                description: 'ProviderReference specifies the provider that will be
+                  used to create, observe, update, and delete this managed resource.
+                  Deprecated: Please use ProviderConfigReference, i.e. `providerConfigRef`'
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                  policy:
+                    description: Policies for referencing.
+                    properties:
+                      resolution:
+                        default: Required
+                        description: Resolution specifies whether resolution of this
+                          reference is required. The default is 'Required', which
+                          means the reconcile will fail if the reference cannot be
+                          resolved. 'Optional' means this reference will be a no-op
+                          if it cannot be resolved.
+                        enum:
+                        - Required
+                        - Optional
+                        type: string
+                      resolve:
+                        description: Resolve specifies when this reference should
+                          be resolved. The default is 'IfNotPresent', which will attempt
+                          to resolve the reference only when the corresponding field
+                          is not present. Use 'Always' to resolve the reference on
+                          every reconcile.
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        type: string
+                    type: object
+                required:
+                - name
+                type: object
+              publishConnectionDetailsTo:
+                description: PublishConnectionDetailsTo specifies the connection secret
+                  config which contains a name, metadata and a reference to secret
+                  store config to which any connection details for this managed resource
+                  should be written. Connection details frequently include the endpoint,
+                  username, and password required to connect to the managed resource.
+                properties:
+                  configRef:
+                    default:
+                      name: default
+                    description: SecretStoreConfigRef specifies which secret store
+                      config should be used for this ConnectionSecret.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                      policy:
+                        description: Policies for referencing.
+                        properties:
+                          resolution:
+                            default: Required
+                            description: Resolution specifies whether resolution of
+                              this reference is required. The default is 'Required',
+                              which means the reconcile will fail if the reference
+                              cannot be resolved. 'Optional' means this reference
+                              will be a no-op if it cannot be resolved.
+                            enum:
+                            - Required
+                            - Optional
+                            type: string
+                          resolve:
+                            description: Resolve specifies when this reference should
+                              be resolved. The default is 'IfNotPresent', which will
+                              attempt to resolve the reference only when the corresponding
+                              field is not present. Use 'Always' to resolve the reference
+                              on every reconcile.
+                            enum:
+                            - Always
+                            - IfNotPresent
+                            type: string
+                        type: object
+                    required:
+                    - name
+                    type: object
+                  metadata:
+                    description: Metadata is the metadata for connection secret.
+                    properties:
+                      annotations:
+                        additionalProperties:
+                          type: string
+                        description: Annotations are the annotations to be added to
+                          connection secret. - For Kubernetes secrets, this will be
+                          used as "metadata.annotations". - It is up to Secret Store
+                          implementation for others store types.
+                        type: object
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: Labels are the labels/tags to be added to connection
+                          secret. - For Kubernetes secrets, this will be used as "metadata.labels".
+                          - It is up to Secret Store implementation for others store
+                          types.
+                        type: object
+                      type:
+                        description: Type is the SecretType for the connection secret.
+                          - Only valid for Kubernetes Secret Stores.
+                        type: string
+                    type: object
+                  name:
+                    description: Name is the name of the connection secret.
+                    type: string
+                required:
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: WriteConnectionSecretToReference specifies the namespace
+                  and name of a Secret to which any connection details for this managed
+                  resource should be written. Connection details frequently include
+                  the endpoint, username, and password required to connect to the
+                  managed resource. This field is planned to be replaced in a future
+                  release in favor of PublishConnectionDetailsTo. Currently, both
+                  could be set independently and connection details would be published
+                  to both without affecting each other.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                  namespace:
+                    description: Namespace of the secret.
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - forProvider
+            type: object
+            x-kubernetes-validations:
+            - message: clusterType is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.clusterType)
+            - message: projectId is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.projectId)
+            - message: replicationSpecs is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.replicationSpecs)
+          status:
+            description: ClusterStatus defines the observed state of Cluster.
+            properties:
+              atProvider:
+                properties:
+                  advancedConfiguration:
+                    items:
+                      properties:
+                        defaultReadConcern:
+                          description: Default level of acknowledgment requested from
+                            MongoDB for read operations set for this cluster. MongoDB
+                            4.4 clusters default to available.
+                          type: string
+                        defaultWriteConcern:
+                          description: Default level of acknowledgment requested from
+                            MongoDB for write operations set for this cluster. MongoDB
+                            4.4 clusters default to 1.
+                          type: string
+                        failIndexKeyTooLong:
+                          description: When true, documents can only be updated or
+                            inserted if, for all indexed fields on the target collection,
+                            the corresponding index entries do not exceed 1024 bytes.
+                            When false, mongod writes documents that exceed the limit
+                            but does not index them.
+                          type: boolean
+                        javascriptEnabled:
+                          description: When true, the cluster allows execution of
+                            operations that perform server-side executions of JavaScript.
+                            When false, the cluster disables execution of those operations.
+                          type: boolean
+                        minimumEnabledTlsProtocol:
+                          description: 'Sets the minimum Transport Layer Security
+                            (TLS) version the cluster accepts for incoming connections.Valid
+                            values are:'
+                          type: string
+                        noTableScan:
+                          description: When true, the cluster disables the execution
+                            of any query that requires a collection scan to return
+                            results. When false, the cluster allows the execution
+                            of those operations.
+                          type: boolean
+                        oplogMinRetentionHours:
+                          description: Minimum retention window for cluster's oplog
+                            expressed in hours. A value of null indicates that the
+                            cluster uses the default minimum oplog window that MongoDB
+                            Cloud calculates.
+                          type: number
+                        oplogSizeMb:
+                          description: The custom oplog size of the cluster. Without
+                            a value that indicates that the cluster uses the default
+                            oplog size calculated by Atlas.
+                          type: number
+                        sampleRefreshIntervalBiConnector:
+                          description: Interval in seconds at which the mongosqld
+                            process re-samples data to create its relational schema.
+                            The default value is 300. The specified value must be
+                            a positive integer. Available only for Atlas deployments
+                            in which BI Connector for Atlas is enabled.
+                          type: number
+                        sampleSizeBiConnector:
+                          description: Number of documents per database to sample
+                            when gathering schema information. Defaults to 100. Available
+                            only for Atlas deployments in which BI Connector for Atlas
+                            is enabled.
+                          type: number
+                        transactionLifetimeLimitSeconds:
+                          description: Lifetime, in seconds, of multi-document transactions.
+                            Defaults to 60 seconds.
+                          type: number
+                      type: object
+                    type: array
+                  backupEnabled:
+                    description: Flag that indicates whether the cluster can perform
+                      backups. If true, the cluster can perform backups. You must
+                      set this value to true for NVMe clusters.
+                    type: boolean
+                  biConnector:
+                    items:
+                      properties:
+                        enabled:
+                          description: Specifies whether or not BI Connector for Atlas
+                            is enabled on the cluster.l
+                          type: boolean
+                        readPreference:
+                          description: Specifies the read preference to be used by
+                            BI Connector for Atlas on the cluster. Each BI Connector
+                            for Atlas read preference contains a distinct combination
+                            of readPreference and readPreferenceTags options. For
+                            details on BI Connector for Atlas read preferences, refer
+                            to the BI Connector Read Preferences Table.
+                          type: string
+                      type: object
+                    type: array
+                  biConnectorConfig:
+                    description: Configuration settings applied to BI Connector for
+                      Atlas on this cluster. The MongoDB Connector for Business Intelligence
+                      for Atlas (BI Connector) is only available for M10 and larger
+                      clusters. The BI Connector is a powerful tool which provides
+                      users SQL-based access to their MongoDB databases. As a result,
+                      the BI Connector performs operations which may be CPU and memory
+                      intensive. Given the limited hardware resources on M10 and M20
+                      cluster tiers, you may experience performance degradation of
+                      the cluster when enabling the BI Connector. If this occurs,
+                      upgrade to an M30 or larger cluster or disable the BI Connector.
+                      See below.
+                    items:
+                      properties:
+                        enabled:
+                          description: Specifies whether or not BI Connector for Atlas
+                            is enabled on the cluster.l
+                          type: boolean
+                        readPreference:
+                          description: Specifies the read preference to be used by
+                            BI Connector for Atlas on the cluster. Each BI Connector
+                            for Atlas read preference contains a distinct combination
+                            of readPreference and readPreferenceTags options. For
+                            details on BI Connector for Atlas read preferences, refer
+                            to the BI Connector Read Preferences Table.
+                          type: string
+                      type: object
+                    type: array
+                  clusterId:
+                    description: The cluster ID.
+                    type: string
+                  clusterType:
+                    description: Atlas provides different instance sizes, each with
+                      a default storage capacity and RAM size. The instance size you
+                      select is used for all the data-bearing servers in your cluster.
+                      See Create a Cluster providerSettings.instanceSizeName for valid
+                      values and default resources.
+                    type: string
+                  connectionStrings:
+                    description: 'Set of connection strings that your applications
+                      use to connect to this cluster. More info in Connection-strings.
+                      Use the parameters in this object to connect your applications
+                      to this cluster. To learn more about the formats of connection
+                      strings, see Connection String Options. NOTE: Atlas returns
+                      the contents of this object after the cluster is operational,
+                      not while it builds the cluster.'
+                    items:
+                      properties:
+                        awsPrivateLink:
+                          additionalProperties:
+                            type: string
+                          description: Private-endpoint-aware mongodb://connection
+                            strings for each interface VPC endpoint you configured
+                            to connect to this cluster. Returned only if you created
+                            a AWS PrivateLink connection to this cluster. DEPRECATED
+                            Use connection_strings.private_endpoint[n].connection_string
+                            instead.
+                          type: object
+                        awsPrivateLinkSrv:
+                          additionalProperties:
+                            type: string
+                          description: Private-endpoint-aware mongodb+srv://connection
+                            strings for each interface VPC endpoint you configured
+                            to connect to this cluster. Returned only if you created
+                            a AWS PrivateLink connection to this cluster. Use this
+                            URI format if your driver supports it. If it doesn’t,
+                            use connectionStrings.awsPrivateLink. DEPRECATED Use connection_strings.private_endpoint[n].srv_connection_string
+                            instead.
+                          type: object
+                        private:
+                          description: Network-peering-endpoint-aware mongodb://connection
+                            strings for each interface VPC endpoint you configured
+                            to connect to this cluster. Returned only if you created
+                            a network peering connection to this cluster.
+                          type: string
+                        privateEndpoint:
+                          description: Private endpoint connection strings. Each object
+                            describes the connection strings you can use to connect
+                            to this cluster through a private endpoint. Atlas returns
+                            this parameter only if you deployed a private endpoint
+                            to all regions to which you deployed this cluster's nodes.
+                          items:
+                            properties:
+                              connectionString:
+                                description: Private-endpoint-aware mongodb://connection
+                                  string for this private endpoint.
+                                type: string
+                              endpoints:
+                                description: Private endpoint through which you connect
+                                  to Atlas when you use connection_strings.private_endpoint[n].connection_string
+                                  or connection_strings.private_endpoint[n].srv_connection_string
+                                items:
+                                  properties:
+                                    endpointId:
+                                      description: Unique identifier of the private
+                                        endpoint.
+                                      type: string
+                                    providerName:
+                                      description: 'Cloud service provider on which
+                                        the servers are provisioned. The possible
+                                        values are:'
+                                      type: string
+                                    region:
+                                      description: Region to which you deployed the
+                                        private endpoint.
+                                      type: string
+                                  type: object
+                                type: array
+                              srvConnectionString:
+                                description: 'Private-endpoint-aware mongodb+srv://
+                                  connection string for this private endpoint. The
+                                  mongodb+srv protocol tells the driver to look up
+                                  the seed list of hosts in DNS . Atlas synchronizes
+                                  this list with the nodes in a cluster. If the connection
+                                  string uses this URI format, you don''t need to:
+                                  Append the seed list or Change the URI if the nodes
+                                  change. Use this URI format if your driver supports
+                                  it. If it doesn''t, use connection_strings.private_endpoint[n].connection_string'
+                                type: string
+                              srvShardOptimizedConnectionString:
+                                description: Private endpoint-aware connection string
+                                  optimized for sharded clusters that uses the mongodb+srv://
+                                  protocol to connect to MongoDB Cloud through a private
+                                  endpoint. If the connection string uses this Uniform
+                                  Resource Identifier (URI) format, you don't need
+                                  to change the Uniform Resource Identifier (URI)
+                                  if the nodes change. Use this Uniform Resource Identifier
+                                  (URI) format if your application and Atlas cluster
+                                  supports it. If it doesn't, use and consult the
+                                  documentation for connectionStrings.privateEndpoint[n].srvConnectionString.
+                                type: string
+                              type:
+                                description: Type of MongoDB process that you connect
+                                  to with the connection strings. Atlas returns MONGOD
+                                  for replica sets, or MONGOS for sharded clusters.
+                                type: string
+                            type: object
+                          type: array
+                        privateSrv:
+                          description: Network-peering-endpoint-aware mongodb+srv://connection
+                            strings for each interface VPC endpoint you configured
+                            to connect to this cluster. Returned only if you created
+                            a network peering connection to this cluster.
+                          type: string
+                        standard:
+                          description: Public mongodb:// connection string for this
+                            cluster.
+                          type: string
+                        standardSrv:
+                          description: Public mongodb+srv:// connection string for
+                            this cluster. The mongodb+srv protocol tells the driver
+                            to look up the seed list of hosts in DNS. Atlas synchronizes
+                            this list with the nodes in a cluster. If the connection
+                            string uses this URI format, you don’t need to append
+                            the seed list or change the URI if the nodes change. Use
+                            this URI format if your driver supports it. If it doesn’t  ,
+                            use connectionStrings.standard.
+                          type: string
+                      type: object
+                    type: array
+                  createDate:
+                    type: string
+                  diskSizeGb:
+                    description: Capacity, in gigabytes, of the host's root volume.
+                      Increase this number to add capacity, up to a maximum possible
+                      value of 4096 (i.e., 4 TB). This value must be a positive number.
+                      You can't set this value with clusters with local NVMe SSDs.
+                      The minimum disk size for dedicated clusters is 10 GB for AWS
+                      and GCP. If you specify diskSizeGB with a lower disk size, Atlas
+                      defaults to the minimum disk size value. If your cluster includes
+                      Azure nodes, this value must correspond to an existing Azure
+                      disk type (8, 16, 32, 64, 128, 256, 512, 1024, 2048, or 4095)Atlas
+                      calculates storage charges differently depending on whether
+                      you choose the default value or a custom value. The maximum
+                      value for disk storage cannot exceed 50 times the maximum RAM
+                      for the selected cluster. If you require additional storage
+                      space beyond this limitation, consider upgrading your cluster
+                      to a higher tier. If your cluster spans cloud service providers,
+                      this value defaults to the minimum default of the providers
+                      involved.
+                    type: number
+                  encryptionAtRestProvider:
+                    description: Possible values are AWS, GCP, AZURE or NONE.  Only
+                      needed if you desire to manage the keys, see Encryption at Rest
+                      using Customer Key Management for complete documentation.  You
+                      must configure encryption at rest for the Atlas project before
+                      enabling it on any cluster in the project. For Documentation,
+                      see AWS, GCP and Azure. Requirements are if replication_specs.#.region_configs.#.<type>Specs.instance_size
+                      is M10 or greater and backup_enabled is false or omitted.
+                    type: string
+                  id:
+                    type: string
+                  labels:
+                    description: Configuration for the collection of key-value pairs
+                      that tag and categorize the cluster. See below.
+                    items:
+                      properties:
+                        key:
+                          description: The key that you want to write.
+                          type: string
+                        value:
+                          description: The value that you want to write.
+                          type: string
+                      type: object
+                    type: array
+                  mongoDbMajorVersion:
+                    description: 'Version of the cluster to deploy. Atlas supports
+                      the following MongoDB versions for M10+ clusters: 4.0, 4.2,
+                      4.4, or 5.0. If omitted, Atlas deploys a cluster that runs MongoDB
+                      4.4. If replication_specs#.region_configs#.<type>Specs.instance_size:
+                      M0, M2 or M5, Atlas deploys MongoDB 4.4. Atlas always deploys
+                      the cluster with the latest stable release of the specified
+                      version.  If you set a value to this parameter and set version_release_system
+                      CONTINUOUS, the resource returns an error. Either clear this
+                      parameter or set version_release_system: LTS.'
+                    type: string
+                  mongoDbVersion:
+                    description: Version of MongoDB the cluster runs, in major-version.minor-version
+                      format.
+                    type: string
+                  paused:
+                    description: 'Flag that indicates whether the cluster is paused
+                      or not. You can pause M10 or larger clusters.  You cannot initiate
+                      pausing for a shared/tenant tier cluster.  See Considerations
+                      for Paused Clusters NOTE Pause lasts for up to 30 days. If you
+                      don''t resume the cluster within 30 days, Atlas resumes the
+                      cluster.   If you prefer to allow the automated change of state
+                      to unpaused use: lifecycle { ignore_changes = [paused] }'
+                    type: boolean
+                  pitEnabled:
+                    description: '- Flag that indicates if the cluster uses Continuous
+                      Cloud Backup.'
+                    type: boolean
+                  projectId:
+                    description: Unique ID for the project to create the database
+                      user.
+                    type: string
+                  replicationSpecs:
+                    description: Configuration for cluster regions and the hardware
+                      provisioned in them. See below
+                    items:
+                      properties:
+                        containerId:
+                          additionalProperties:
+                            type: string
+                          description: A key-value map of the Network Peering Container
+                            ID(s) for the configuration specified in region_configs.
+                            The Container ID is the id of the container created when
+                            the first cluster in the region (AWS/Azure) or project
+                            (GCP) was created.  The syntax is "providerName:regionName"
+                            = "containerId". Example AWS:US_EAST_1" = "61e0797dde08fb498ca11a71.
+                          type: object
+                        id:
+                          type: string
+                        numShards:
+                          description: Provide this value if you set a cluster_type
+                            of SHARDED or GEOSHARDED. Omit this value if you selected
+                            a cluster_type of REPLICASET. This API resource accepts
+                            1 through 50, inclusive. This parameter defaults to 1.
+                            If you specify a num_shards value of 1 and a cluster_type
+                            of SHARDED, Atlas deploys a single-shard sharded cluster.
+                            Don't create a sharded cluster with a single shard for
+                            production environments. Single-shard sharded clusters
+                            don't provide the same benefits as multi-shard configurations.
+                          type: number
+                        regionConfigs:
+                          description: Configuration for the hardware specifications
+                            for nodes set for a given regionEach region_configs object
+                            describes the region's priority in elections and the number
+                            and type of MongoDB nodes that Atlas deploys to the region.
+                            Each region_configs object must have either an analytics_specs
+                            object, electable_specs object, or read_only_specs object.
+                            See below
+                          items:
+                            properties:
+                              analyticsAutoScaling:
+                                description: Configuration for the Collection of settings
+                                  that configures analytics-auto-scaling information
+                                  for the cluster. The values for the analytics_auto_scaling
+                                  parameter must be the same for every item in the
+                                  replication_specs array. See below
+                                items:
+                                  properties:
+                                    computeEnabled:
+                                      description: Flag that indicates whether instance
+                                        size auto-scaling is enabled. This parameter
+                                        defaults to false.
+                                      type: boolean
+                                    computeMaxInstanceSize:
+                                      description: Maximum instance size to which
+                                        your cluster can automatically scale (such
+                                        as M40). Atlas requires this parameter if
+                                        replication_specs.#.region_configs.#.auto_scaling.0.compute_enabled
+                                        is true.
+                                      type: string
+                                    computeMinInstanceSize:
+                                      description: Minimum instance size to which
+                                        your cluster can automatically scale (such
+                                        as M10). Atlas requires this parameter if
+                                        replication_specs.#.region_configs.#.auto_scaling.0.compute_scale_down_enabled
+                                        is true.
+                                      type: string
+                                    computeScaleDownEnabled:
+                                      description: 'Flag that indicates whether the
+                                        instance size may scale down. Atlas requires
+                                        this parameter if replication_specs.#.region_configs.#.auto_scaling.0.compute_enabled
+                                        : true. If you enable this option, specify
+                                        a value for replication_specs.#.region_configs.#.auto_scaling.0.compute_min_instance_size.'
+                                      type: boolean
+                                    diskGbEnabled:
+                                      description: Flag that indicates whether this
+                                        cluster enables disk auto-scaling. This parameter
+                                        defaults to true.
+                                      type: boolean
+                                  type: object
+                                type: array
+                              analyticsSpecs:
+                                description: Hardware specifications for analytics
+                                  nodes needed in the region. Analytics nodes handle
+                                  analytic data such as reporting queries from BI
+                                  Connector for Atlas. Analytics nodes are read-only
+                                  and can never become the primary. If you don't specify
+                                  this parameter, no analytics nodes deploy to this
+                                  region. See below
+                                items:
+                                  properties:
+                                    diskIops:
+                                      description: Target throughput (IOPS) desired
+                                        for AWS storage attached to your cluster.
+                                        Set only if you selected AWS as your cloud
+                                        service provider. You can't set this parameter
+                                        for a multi-cloud cluster.
+                                      type: number
+                                    ebsVolumeType:
+                                      description: 'Type of storage you want to attach
+                                        to your AWS-provisioned cluster. Set only
+                                        if you selected AWS as your cloud service
+                                        provider. You can''t set this parameter for
+                                        a multi-cloud cluster. Valid values are:'
+                                      type: string
+                                    instanceSize:
+                                      description: Hardware specification for the
+                                        instance sizes in this region. Each instance
+                                        size has a default storage and memory capacity.
+                                        The instance size you select applies to all
+                                        the data-bearing hosts in your instance size.
+                                      type: string
+                                    nodeCount:
+                                      description: Number of nodes of the given type
+                                        for MongoDB Atlas to deploy to the region.
+                                      type: number
+                                  type: object
+                                type: array
+                              autoScaling:
+                                description: Configuration for the Collection of settings
+                                  that configures auto-scaling information for the
+                                  cluster. The values for the auto_scaling parameter
+                                  must be the same for every item in the replication_specs
+                                  array. See below
+                                items:
+                                  properties:
+                                    computeEnabled:
+                                      description: Flag that indicates whether instance
+                                        size auto-scaling is enabled. This parameter
+                                        defaults to false.
+                                      type: boolean
+                                    computeMaxInstanceSize:
+                                      description: Maximum instance size to which
+                                        your cluster can automatically scale (such
+                                        as M40). Atlas requires this parameter if
+                                        replication_specs.#.region_configs.#.auto_scaling.0.compute_enabled
+                                        is true.
+                                      type: string
+                                    computeMinInstanceSize:
+                                      description: Minimum instance size to which
+                                        your cluster can automatically scale (such
+                                        as M10). Atlas requires this parameter if
+                                        replication_specs.#.region_configs.#.auto_scaling.0.compute_scale_down_enabled
+                                        is true.
+                                      type: string
+                                    computeScaleDownEnabled:
+                                      description: 'Flag that indicates whether the
+                                        instance size may scale down. Atlas requires
+                                        this parameter if replication_specs.#.region_configs.#.auto_scaling.0.compute_enabled
+                                        : true. If you enable this option, specify
+                                        a value for replication_specs.#.region_configs.#.auto_scaling.0.compute_min_instance_size.'
+                                      type: boolean
+                                    diskGbEnabled:
+                                      description: Flag that indicates whether this
+                                        cluster enables disk auto-scaling. This parameter
+                                        defaults to true.
+                                      type: boolean
+                                  type: object
+                                type: array
+                              backingProviderName:
+                                description: Cloud service provider on which you provision
+                                  the host for a multi-tenant cluster. Use this only
+                                  when a provider_name is TENANT and instance_size
+                                  of a specs is M2 or M5.
+                                type: string
+                              electableSpecs:
+                                description: Hardware specifications for electable
+                                  nodes in the region. Electable nodes can become
+                                  the primary and can enable local reads. If you do
+                                  not specify this option, no electable nodes are
+                                  deployed to the region. See below
+                                items:
+                                  properties:
+                                    diskIops:
+                                      description: Target throughput (IOPS) desired
+                                        for AWS storage attached to your cluster.
+                                        Set only if you selected AWS as your cloud
+                                        service provider. You can't set this parameter
+                                        for a multi-cloud cluster.
+                                      type: number
+                                    ebsVolumeType:
+                                      description: 'Type of storage you want to attach
+                                        to your AWS-provisioned cluster. Set only
+                                        if you selected AWS as your cloud service
+                                        provider. You can''t set this parameter for
+                                        a multi-cloud cluster. Valid values are:'
+                                      type: string
+                                    instanceSize:
+                                      description: Hardware specification for the
+                                        instance sizes in this region. Each instance
+                                        size has a default storage and memory capacity.
+                                        The instance size you select applies to all
+                                        the data-bearing hosts in your instance size.
+                                      type: string
+                                    nodeCount:
+                                      description: Number of nodes of the given type
+                                        for MongoDB Atlas to deploy to the region.
+                                      type: number
+                                  type: object
+                                type: array
+                              priority:
+                                description: Election priority of the region. For
+                                  regions with only read-only nodes, set this value
+                                  to 0.
+                                type: number
+                              providerName:
+                                description: 'Cloud service provider on which the
+                                  servers are provisioned. The possible values are:'
+                                type: string
+                              readOnlySpecs:
+                                description: Hardware specifications for read-only
+                                  nodes in the region. Read-only nodes can become
+                                  the primary and can enable local reads. If you don't
+                                  specify this parameter, no read-only nodes are deployed
+                                  to the region. See below
+                                items:
+                                  properties:
+                                    diskIops:
+                                      description: Target throughput (IOPS) desired
+                                        for AWS storage attached to your cluster.
+                                        Set only if you selected AWS as your cloud
+                                        service provider. You can't set this parameter
+                                        for a multi-cloud cluster.
+                                      type: number
+                                    ebsVolumeType:
+                                      description: 'Type of storage you want to attach
+                                        to your AWS-provisioned cluster. Set only
+                                        if you selected AWS as your cloud service
+                                        provider. You can''t set this parameter for
+                                        a multi-cloud cluster. Valid values are:'
+                                      type: string
+                                    instanceSize:
+                                      description: Hardware specification for the
+                                        instance sizes in this region. Each instance
+                                        size has a default storage and memory capacity.
+                                        The instance size you select applies to all
+                                        the data-bearing hosts in your instance size.
+                                      type: string
+                                    nodeCount:
+                                      description: Number of nodes of the given type
+                                        for MongoDB Atlas to deploy to the region.
+                                      type: number
+                                  type: object
+                                type: array
+                              regionName:
+                                description: Physical location of your MongoDB cluster.
+                                  The region you choose can affect network latency
+                                  for clients accessing your databases.  Requires
+                                  the Atlas region name, see the reference list for
+                                  AWS, GCP, Azure.
+                                type: string
+                            type: object
+                          type: array
+                        zoneName:
+                          description: Name for the zone in a Global Cluster.
+                          type: string
+                      type: object
+                    type: array
+                  retainBackupsEnabled:
+                    description: Set to true to retain backup snapshots for the deleted
+                      cluster. M10 and above only. Flag that indicates whether to
+                      retain backup snapshots for the deleted dedicated cluster
+                    type: boolean
+                  rootCertType:
+                    description: '- Certificate Authority that MongoDB Atlas clusters
+                      use. You can specify ISRGROOTX1 (for ISRG Root X1).'
+                    type: string
+                  stateName:
+                    description: 'Current state of the cluster. The possible states
+                      are:'
+                    type: string
+                  terminationProtectionEnabled:
+                    description: Flag that indicates whether termination protection
+                      is enabled on the cluster. If set to true, MongoDB Cloud won't
+                      delete the cluster. If set to false, MongoDB Cloud will delete
+                      the cluster.
+                    type: boolean
+                  versionReleaseSystem:
+                    description: '- Release cadence that Atlas uses for this cluster.
+                      This parameter defaults to LTS. If you set this field to CONTINUOUS,
+                      you must omit the mongo_db_major_version field. Atlas accepts:'
+                    type: string
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: LastTransitionTime is the last time this condition
+                        transitioned from one status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A Message containing details about this condition's
+                        last transition from one status to another, if any.
+                      type: string
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: Type of this condition. At most one of each condition
+                        type may apply to a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

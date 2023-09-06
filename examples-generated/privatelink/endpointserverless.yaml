@@ -1,0 +1,16 @@
+apiVersion: privatelink.mongodbatlas.crossplane.io/v1alpha1
+kind: EndpointServerless
+metadata:
+  annotations:
+    meta.upbound.io/example-id: privatelink/v1alpha1/endpointserverless
+  labels:
+    testing.upbound.io/example-name: test
+  name: test
+spec:
+  forProvider:
+    instanceName: ${mongodbatlas_serverless_instance.test.name}
+    projectId: <PROJECT_ID>
+    providerName: AWS
+
+---
+
