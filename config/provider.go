@@ -10,12 +10,18 @@ import (
 
 	ujconfig "github.com/upbound/upjet/pkg/config"
 
-	"github.com/upbound/upjet-provider-template/config/null"
+	"github.com/haooliveira84/provider-mongodbatlas/config/backup"
+	"github.com/haooliveira84/provider-mongodbatlas/config/cluster"
+	"github.com/haooliveira84/provider-mongodbatlas/config/dbrole"
+	"github.com/haooliveira84/provider-mongodbatlas/config/dbuser"
+	"github.com/haooliveira84/provider-mongodbatlas/config/organization"
+	"github.com/haooliveira84/provider-mongodbatlas/config/project"
+	"github.com/haooliveira84/provider-mongodbatlas/config/teams"
 )
 
 const (
-	resourcePrefix = "template"
-	modulePath     = "github.com/upbound/upjet-provider-template"
+	resourcePrefix = "mongodbatlas"
+	modulePath     = "github.com/haooliveira84/provider-mongodbatlas"
 )
 
 //go:embed schema.json
@@ -27,7 +33,7 @@ var providerMetadata string
 // GetProvider returns provider configuration
 func GetProvider() *ujconfig.Provider {
 	pc := ujconfig.NewProvider([]byte(providerSchema), resourcePrefix, modulePath, []byte(providerMetadata),
-		ujconfig.WithRootGroup("template.upbound.io"),
+		ujconfig.WithRootGroup("mongodbatlas.upbound.io"),
 		ujconfig.WithIncludeList(ExternalNameConfigured()),
 		ujconfig.WithFeaturesPackage("internal/features"),
 		ujconfig.WithDefaultResourceOptions(
@@ -35,8 +41,13 @@ func GetProvider() *ujconfig.Provider {
 		))
 
 	for _, configure := range []func(provider *ujconfig.Provider){
-		// add custom config functions
-		null.Configure,
+		backup.Configure,
+		cluster.Configure,
+		dbrole.Configure,
+		dbuser.Configure,
+		organization.Configure,
+		project.Configure,
+		teams.Configure,
 	} {
 		configure(pc)
 	}
