@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: organizations.mongodbatlas.mongodbatlas.crossplane.io
+  name: auditings.mongodbatlas.crossplane.io
 spec:
-  group: mongodbatlas.mongodbatlas.crossplane.io
+  group: mongodbatlas.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - mongodbatlas
-    kind: Organization
-    listKind: OrganizationList
-    plural: organizations
-    singular: organization
+    kind: Auditing
+    listKind: AuditingList
+    plural: auditings
+    singular: auditing
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,8 +35,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Organization is the Schema for the Organizations API. Provides
-          a Organization resource.
+        description: Auditing is the Schema for the Auditings API. Provides a Auditing
+          resource.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -51,7 +51,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: OrganizationSpec defines the desired state of Organization
+            description: AuditingSpec defines the desired state of Auditing
             properties:
               deletionPolicy:
                 default: Delete
@@ -68,39 +68,28 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  description:
-                    description: Programmatic API Key description
+                  auditAuthorizationSuccess:
+                    description: 'Indicates whether the auditing system captures successful
+                      authentication attempts for audit filters using the "atype"
+                      : "authCheck" auditing event. For more information, see auditAuthorizationSuccess.  Warning!
+                      Enabling Audit authorization successes can severely impact cluster
+                      performance. Enable this option with caution.'
+                    type: boolean
+                  auditFilter:
+                    description: JSON-formatted audit filter. For complete documentation
+                      on custom auditing filters, see Configure Audit Filters.
                     type: string
-                  federationSettingsId:
-                    description: Unique 24-hexadecimal digit string that identifies
-                      the federation to link the newly created organization to. If
-                      specified, the proposed Organization Owner of the new organization
-                      must have the Organization Owner role in an organization associated
-                      with the federation.
+                  enabled:
+                    description: Denotes whether or not the project associated with
+                      the {project_id} has database auditing enabled.  Defaults to
+                      false.
+                    type: boolean
+                  projectId:
+                    description: 'The unique ID for the project to configure auditing.
+                      Note: When changing this value to a different project_id it
+                      will delete the current audit settings for the original project
+                      that was assigned to.'
                     type: string
-                  name:
-                    description: The name of the organization you want to create.
-                      (Cannot be changed via this Provider after creation.)
-                    type: string
-                  orgOwnerId:
-                    description: Unique 24-hexadecimal digit string that identifies
-                      the Atlas user that you want to assign the Organization Owner
-                      role. This user must be a member of the same organization as
-                      the calling API key.  This is only required when authenticating
-                      with Programmatic API Keys. MongoDB Atlas Admin API - Get User
-                      By Username
-                    type: string
-                  roleNames:
-                    description: List of Organization roles that the Programmatic
-                      API key needs to have. Ensure that you provide at least one
-                      role and ensure all roles are valid for the Organization.  You
-                      must specify an array even if you are only associating a single
-                      role with the Programmatic API key. The MongoDB Documentation
-                      describes the roles that you can assign to a Programmatic API
-                      key.
-                    items:
-                      type: string
-                    type: array
                 type: object
               managementPolicy:
                 default: FullControl
@@ -289,57 +278,41 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: description is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.description)
-            - message: name is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.name)
-            - message: orgOwnerId is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.orgOwnerId)
-            - message: roleNames is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.roleNames)
+            - message: projectId is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.projectId)
           status:
-            description: OrganizationStatus defines the observed state of Organization.
+            description: AuditingStatus defines the observed state of Auditing.
             properties:
               atProvider:
                 properties:
-                  description:
-                    description: Programmatic API Key description
+                  auditAuthorizationSuccess:
+                    description: 'Indicates whether the auditing system captures successful
+                      authentication attempts for audit filters using the "atype"
+                      : "authCheck" auditing event. For more information, see auditAuthorizationSuccess.  Warning!
+                      Enabling Audit authorization successes can severely impact cluster
+                      performance. Enable this option with caution.'
+                    type: boolean
+                  auditFilter:
+                    description: JSON-formatted audit filter. For complete documentation
+                      on custom auditing filters, see Configure Audit Filters.
                     type: string
-                  federationSettingsId:
-                    description: Unique 24-hexadecimal digit string that identifies
-                      the federation to link the newly created organization to. If
-                      specified, the proposed Organization Owner of the new organization
-                      must have the Organization Owner role in an organization associated
-                      with the federation.
+                  configurationType:
+                    description: 'Denotes the configuration method for the audit filter.
+                      Possible values are:'
                     type: string
+                  enabled:
+                    description: Denotes whether or not the project associated with
+                      the {project_id} has database auditing enabled.  Defaults to
+                      false.
+                    type: boolean
                   id:
                     type: string
-                  name:
-                    description: The name of the organization you want to create.
-                      (Cannot be changed via this Provider after creation.)
+                  projectId:
+                    description: 'The unique ID for the project to configure auditing.
+                      Note: When changing this value to a different project_id it
+                      will delete the current audit settings for the original project
+                      that was assigned to.'
                     type: string
-                  orgId:
-                    description: The organization id.
-                    type: string
-                  orgOwnerId:
-                    description: Unique 24-hexadecimal digit string that identifies
-                      the Atlas user that you want to assign the Organization Owner
-                      role. This user must be a member of the same organization as
-                      the calling API key.  This is only required when authenticating
-                      with Programmatic API Keys. MongoDB Atlas Admin API - Get User
-                      By Username
-                    type: string
-                  roleNames:
-                    description: List of Organization roles that the Programmatic
-                      API key needs to have. Ensure that you provide at least one
-                      role and ensure all roles are valid for the Organization.  You
-                      must specify an array even if you are only associating a single
-                      role with the Programmatic API key. The MongoDB Documentation
-                      describes the roles that you can assign to a Programmatic API
-                      key.
-                    items:
-                      type: string
-                    type: array
                 type: object
               conditions:
                 description: Conditions of the resource.

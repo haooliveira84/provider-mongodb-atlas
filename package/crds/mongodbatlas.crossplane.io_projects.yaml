@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: users.mongodbatlas.mongodbatlas.crossplane.io
+  name: projects.mongodbatlas.crossplane.io
 spec:
-  group: mongodbatlas.mongodbatlas.crossplane.io
+  group: mongodbatlas.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - mongodbatlas
-    kind: User
-    listKind: UserList
-    plural: users
-    singular: user
+    kind: Project
+    listKind: ProjectList
+    plural: projects
+    singular: project
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: User is the Schema for the Users API. Provides a Database User
+        description: Project is the Schema for the Projects API. Provides a Project
           resource.
         properties:
           apiVersion:
@@ -51,7 +51,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: UserSpec defines the desired state of User
+            description: ProjectSpec defines the desired state of Project
             properties:
               deletionPolicy:
                 default: Delete
@@ -68,113 +68,134 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  authDatabaseName:
-                    description: 'Database against which Atlas authenticates the user.
-                      A user must provide both a username and authentication database
-                      to log into MongoDB. Accepted values include:'
-                    type: string
-                  awsIamType:
-                    description: 'If this value is set, the new database user authenticates
-                      with AWS IAM credentials. If no value is given, Atlas uses the
-                      default value of NONE. The accepted types are:'
-                    type: string
-                  databaseName:
-                    description: Database on which the user has the specified role.
-                      A role on the admin database can include privileges that apply
-                      to the other databases.
-                    type: string
-                  labels:
+                  apiKeys:
                     items:
                       properties:
-                        key:
-                          description: The key that you want to write.
+                        apiKeyId:
+                          description: 'The unique identifier of the Programmatic
+                            API key you want to associate with the Project.  The Programmatic
+                            API key and Project must share the same parent organization.  Note:
+                            this is not the publicKey of the Programmatic API key
+                            but the id of the key. See Programmatic API Keys for more.'
                           type: string
-                        value:
-                          description: The value that you want to write.
-                          type: string
+                        roleNames:
+                          description: Each string in the array represents a project
+                            role you want to assign to the team. Every user associated
+                            with the team inherits these roles. You must specify an
+                            array even if you are only associating a single role with
+                            the team. The MongoDB Documentation describes the roles
+                            a user can have.
+                          items:
+                            type: string
+                          type: array
+                      required:
+                      - apiKeyId
+                      - roleNames
                       type: object
                     type: array
-                  ldapAuthType:
-                    description: Method by which the provided username is authenticated.
-                      If no value is given, Atlas uses the default value of NONE.
-                    type: string
-                  oidcAuthType:
-                    description: 'Human-readable label that indicates whether the
-                      new database user authenticates with OIDC (OpenID Connect) federated
-                      authentication. If no value is given, Atlas uses the default
-                      value of NONE. The accepted types are:'
-                    type: string
-                  passwordSecretRef:
-                    description: User's initial password. Password can be changed
-                      after creation using your preferred method, e.g. via the MongoDB
-                      Atlas UI, to ensure security.
-                    properties:
-                      key:
-                        description: The key to select.
-                        type: string
-                      name:
-                        description: Name of the secret.
-                        type: string
-                      namespace:
-                        description: Namespace of the secret.
-                        type: string
-                    required:
-                    - key
-                    - name
-                    - namespace
-                    type: object
-                  projectId:
-                    description: The unique ID for the project to create the database
-                      user.
-                    type: string
-                  roles:
-                    description: List of user’s roles and the databases / collections
-                      on which the roles apply. A role allows the user to perform
-                      particular actions on the specified database. A role on the
-                      admin database can include privileges that apply to the other
-                      databases as well. See Roles below for more details.
-                    items:
-                      properties:
-                        collectionName:
-                          description: Collection for which the role applies. You
-                            can specify a collection for the read and readWrite roles.
-                            If you do not specify a collection for read and readWrite,
-                            the role applies to all collections in the database (excluding
-                            some collections in the system. database).
-                          type: string
-                        databaseName:
-                          description: Database on which the user has the specified
-                            role. A role on the admin database can include privileges
-                            that apply to the other databases.
-                          type: string
-                        roleName:
-                          description: Name of the role to grant. See Create a Database
-                            User roles.roleName for valid values and restrictions.
-                          type: string
-                      type: object
-                    type: array
-                  scopes:
+                  isCollectDatabaseSpecificsStatisticsEnabled:
+                    description: Flag that indicates whether to enable statistics
+                      in cluster metrics collection for the project.
+                    type: boolean
+                  isDataExplorerEnabled:
+                    description: Flag that indicates whether to enable Data Explorer
+                      for the project. If enabled, you can query your database with
+                      an easy to use interface.  When Data Explorer is disabled, you
+                      cannot terminate slow operations from the Real-Time Performance
+                      Panel or create indexes from the Performance Advisor. You can
+                      still view Performance Advisor recommendations, but you must
+                      create those indexes from mongosh.
+                    type: boolean
+                  isExtendedStorageSizesEnabled:
+                    description: Flag that indicates whether to enable extended storage
+                      sizes for the specified project. Clusters with extended storage
+                      sizes must be on AWS or GCP, and cannot span multiple regions.
+                      When extending storage size, initial syncs and cross-project
+                      snapshot restores will be slow. This setting should only be
+                      used as a measure of temporary relief; consider sharding if
+                      more storage is required.
+                    type: boolean
+                  isPerformanceAdvisorEnabled:
+                    description: Flag that indicates whether to enable Performance
+                      Advisor and Profiler for the project. If enabled, you can analyze
+                      database logs to recommend performance improvements.
+                    type: boolean
+                  isRealtimePerformancePanelEnabled:
+                    description: Flag that indicates whether to enable Real Time Performance
+                      Panel for the project. If enabled, you can see real time metrics
+                      from your MongoDB database.
+                    type: boolean
+                  isSchemaAdvisorEnabled:
+                    description: Flag that indicates whether to enable Schema Advisor
+                      for the project. If enabled, you receive customized recommendations
+                      to optimize your data model and enhance performance. Disable
+                      this setting to disable schema suggestions in the Performance
+                      Advisor and the Data Explorer.
+                    type: boolean
+                  limits:
                     items:
                       properties:
                         name:
-                          description: Name of the cluster or Atlas Data Lake that
-                            the user has access to.
+                          description: The name of the project you want to create.
                           type: string
-                        type:
-                          description: 'Type of resource that the user has access
-                            to. Valid values are: CLUSTER and DATA_LAKE'
-                          type: string
+                        value:
+                          description: Amount to set the limit to. Use the Project
+                            Limit Documentation under limitName parameter to verify
+                            the override limits.
+                          type: number
+                      required:
+                      - name
+                      - value
                       type: object
                     type: array
-                  username:
-                    description: Username for authenticating to MongoDB. USER_ARN
-                      or ROLE_ARN if aws_iam_type is USER or ROLE.
+                  name:
+                    description: The name of the project you want to create.
                     type: string
-                  x509Type:
-                    description: 'X.509 method by which the provided username is authenticated.
-                      If no value is given, Atlas uses the default value of NONE.
-                      The accepted types are:'
+                  orgId:
+                    description: The ID of the organization you want to create the
+                      project within.
                     type: string
+                  projectOwnerId:
+                    description: Unique 24-hexadecimal digit string that identifies
+                      the Atlas user account to be granted the Project Owner role
+                      on the specified project. If you set this parameter, it overrides
+                      the default value of the oldest Organization Owner.
+                    type: string
+                  regionUsageRestrictions:
+                    description: Designates that this project can be used for government
+                      regions only.  If not set the project will default to standard
+                      regions.   You cannot deploy clusters across government and
+                      standard regions in the same project. AWS is the only cloud
+                      provider for AtlasGov.  For more information see MongoDB Atlas
+                      for Government.
+                    type: string
+                  teams:
+                    items:
+                      properties:
+                        roleNames:
+                          description: Each string in the array represents a project
+                            role you want to assign to the team. Every user associated
+                            with the team inherits these roles. You must specify an
+                            array even if you are only associating a single role with
+                            the team. The MongoDB Documentation describes the roles
+                            a user can have.
+                          items:
+                            type: string
+                          type: array
+                        teamId:
+                          description: The unique identifier of the team you want
+                            to associate with the project. The team and project must
+                            share the same parent organization.
+                          type: string
+                      required:
+                      - roleNames
+                      - teamId
+                      type: object
+                    type: array
+                  withDefaultAlertsSettings:
+                    description: It allows users to disable the creation of the default
+                      alert settings. By default, this flag is set to true.
+                    type: boolean
                 type: object
               managementPolicy:
                 default: FullControl
@@ -363,108 +384,150 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: projectId is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.projectId)
-            - message: roles is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.roles)
-            - message: username is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.username)
+            - message: name is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.name)
+            - message: orgId is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.orgId)
           status:
-            description: UserStatus defines the observed state of User.
+            description: ProjectStatus defines the observed state of Project.
             properties:
               atProvider:
                 properties:
-                  authDatabaseName:
-                    description: 'Database against which Atlas authenticates the user.
-                      A user must provide both a username and authentication database
-                      to log into MongoDB. Accepted values include:'
-                    type: string
-                  awsIamType:
-                    description: 'If this value is set, the new database user authenticates
-                      with AWS IAM credentials. If no value is given, Atlas uses the
-                      default value of NONE. The accepted types are:'
-                    type: string
-                  databaseName:
-                    description: Database on which the user has the specified role.
-                      A role on the admin database can include privileges that apply
-                      to the other databases.
+                  apiKeys:
+                    items:
+                      properties:
+                        apiKeyId:
+                          description: 'The unique identifier of the Programmatic
+                            API key you want to associate with the Project.  The Programmatic
+                            API key and Project must share the same parent organization.  Note:
+                            this is not the publicKey of the Programmatic API key
+                            but the id of the key. See Programmatic API Keys for more.'
+                          type: string
+                        roleNames:
+                          description: Each string in the array represents a project
+                            role you want to assign to the team. Every user associated
+                            with the team inherits these roles. You must specify an
+                            array even if you are only associating a single role with
+                            the team. The MongoDB Documentation describes the roles
+                            a user can have.
+                          items:
+                            type: string
+                          type: array
+                      type: object
+                    type: array
+                  clusterCount:
+                    description: The number of Atlas clusters deployed in the project..
+                    type: number
+                  created:
+                    description: The ISO-8601-formatted timestamp of when Atlas created
+                      the project..
                     type: string
                   id:
-                    description: The database user's name.
+                    description: The project id.
                     type: string
-                  labels:
+                  isCollectDatabaseSpecificsStatisticsEnabled:
+                    description: Flag that indicates whether to enable statistics
+                      in cluster metrics collection for the project.
+                    type: boolean
+                  isDataExplorerEnabled:
+                    description: Flag that indicates whether to enable Data Explorer
+                      for the project. If enabled, you can query your database with
+                      an easy to use interface.  When Data Explorer is disabled, you
+                      cannot terminate slow operations from the Real-Time Performance
+                      Panel or create indexes from the Performance Advisor. You can
+                      still view Performance Advisor recommendations, but you must
+                      create those indexes from mongosh.
+                    type: boolean
+                  isExtendedStorageSizesEnabled:
+                    description: Flag that indicates whether to enable extended storage
+                      sizes for the specified project. Clusters with extended storage
+                      sizes must be on AWS or GCP, and cannot span multiple regions.
+                      When extending storage size, initial syncs and cross-project
+                      snapshot restores will be slow. This setting should only be
+                      used as a measure of temporary relief; consider sharding if
+                      more storage is required.
+                    type: boolean
+                  isPerformanceAdvisorEnabled:
+                    description: Flag that indicates whether to enable Performance
+                      Advisor and Profiler for the project. If enabled, you can analyze
+                      database logs to recommend performance improvements.
+                    type: boolean
+                  isRealtimePerformancePanelEnabled:
+                    description: Flag that indicates whether to enable Real Time Performance
+                      Panel for the project. If enabled, you can see real time metrics
+                      from your MongoDB database.
+                    type: boolean
+                  isSchemaAdvisorEnabled:
+                    description: Flag that indicates whether to enable Schema Advisor
+                      for the project. If enabled, you receive customized recommendations
+                      to optimize your data model and enhance performance. Disable
+                      this setting to disable schema suggestions in the Performance
+                      Advisor and the Data Explorer.
+                    type: boolean
+                  limits:
                     items:
                       properties:
-                        key:
-                          description: The key that you want to write.
+                        currentUsage:
+                          type: number
+                        defaultLimit:
+                          type: number
+                        maximumLimit:
+                          type: number
+                        name:
+                          description: The name of the project you want to create.
                           type: string
                         value:
-                          description: The value that you want to write.
-                          type: string
+                          description: Amount to set the limit to. Use the Project
+                            Limit Documentation under limitName parameter to verify
+                            the override limits.
+                          type: number
                       type: object
                     type: array
-                  ldapAuthType:
-                    description: Method by which the provided username is authenticated.
-                      If no value is given, Atlas uses the default value of NONE.
+                  name:
+                    description: The name of the project you want to create.
                     type: string
-                  oidcAuthType:
-                    description: 'Human-readable label that indicates whether the
-                      new database user authenticates with OIDC (OpenID Connect) federated
-                      authentication. If no value is given, Atlas uses the default
-                      value of NONE. The accepted types are:'
+                  orgId:
+                    description: The ID of the organization you want to create the
+                      project within.
                     type: string
-                  projectId:
-                    description: The unique ID for the project to create the database
-                      user.
+                  projectOwnerId:
+                    description: Unique 24-hexadecimal digit string that identifies
+                      the Atlas user account to be granted the Project Owner role
+                      on the specified project. If you set this parameter, it overrides
+                      the default value of the oldest Organization Owner.
                     type: string
-                  roles:
-                    description: List of user’s roles and the databases / collections
-                      on which the roles apply. A role allows the user to perform
-                      particular actions on the specified database. A role on the
-                      admin database can include privileges that apply to the other
-                      databases as well. See Roles below for more details.
+                  regionUsageRestrictions:
+                    description: Designates that this project can be used for government
+                      regions only.  If not set the project will default to standard
+                      regions.   You cannot deploy clusters across government and
+                      standard regions in the same project. AWS is the only cloud
+                      provider for AtlasGov.  For more information see MongoDB Atlas
+                      for Government.
+                    type: string
+                  teams:
                     items:
                       properties:
-                        collectionName:
-                          description: Collection for which the role applies. You
-                            can specify a collection for the read and readWrite roles.
-                            If you do not specify a collection for read and readWrite,
-                            the role applies to all collections in the database (excluding
-                            some collections in the system. database).
-                          type: string
-                        databaseName:
-                          description: Database on which the user has the specified
-                            role. A role on the admin database can include privileges
-                            that apply to the other databases.
-                          type: string
-                        roleName:
-                          description: Name of the role to grant. See Create a Database
-                            User roles.roleName for valid values and restrictions.
-                          type: string
-                      type: object
-                    type: array
-                  scopes:
-                    items:
-                      properties:
-                        name:
-                          description: Name of the cluster or Atlas Data Lake that
-                            the user has access to.
-                          type: string
-                        type:
-                          description: 'Type of resource that the user has access
-                            to. Valid values are: CLUSTER and DATA_LAKE'
+                        roleNames:
+                          description: Each string in the array represents a project
+                            role you want to assign to the team. Every user associated
+                            with the team inherits these roles. You must specify an
+                            array even if you are only associating a single role with
+                            the team. The MongoDB Documentation describes the roles
+                            a user can have.
+                          items:
+                            type: string
+                          type: array
+                        teamId:
+                          description: The unique identifier of the team you want
+                            to associate with the project. The team and project must
+                            share the same parent organization.
                           type: string
                       type: object
                     type: array
-                  username:
-                    description: Username for authenticating to MongoDB. USER_ARN
-                      or ROLE_ARN if aws_iam_type is USER or ROLE.
-                    type: string
-                  x509Type:
-                    description: 'X.509 method by which the provided username is authenticated.
-                      If no value is given, Atlas uses the default value of NONE.
-                      The accepted types are:'
-                    type: string
+                  withDefaultAlertsSettings:
+                    description: It allows users to disable the creation of the default
+                      alert settings. By default, this flag is set to true.
+                    type: boolean
                 type: object
               conditions:
                 description: Conditions of the resource.

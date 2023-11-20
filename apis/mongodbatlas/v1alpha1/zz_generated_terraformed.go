@@ -13,18 +13,18 @@ import (
 	"github.com/upbound/upjet/pkg/resource/json"
 )
 
-// GetTerraformResourceType returns Terraform resource type for this Auditing
-func (mg *Auditing) GetTerraformResourceType() string {
-	return "mongodbatlas_auditing"
+// GetTerraformResourceType returns Terraform resource type for this DBRole
+func (mg *DBRole) GetTerraformResourceType() string {
+	return "mongodbatlas_custom_db_role"
 }
 
-// GetConnectionDetailsMapping for this Auditing
-func (tr *Auditing) GetConnectionDetailsMapping() map[string]string {
+// GetConnectionDetailsMapping for this DBRole
+func (tr *DBRole) GetConnectionDetailsMapping() map[string]string {
 	return nil
 }
 
-// GetObservation of this Auditing
-func (tr *Auditing) GetObservation() (map[string]any, error) {
+// GetObservation of this DBRole
+func (tr *DBRole) GetObservation() (map[string]any, error) {
 	o, err := json.TFParser.Marshal(tr.Status.AtProvider)
 	if err != nil {
 		return nil, err
@@ -33,8 +33,8 @@ func (tr *Auditing) GetObservation() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(o, &base)
 }
 
-// SetObservation for this Auditing
-func (tr *Auditing) SetObservation(obs map[string]any) error {
+// SetObservation for this DBRole
+func (tr *DBRole) SetObservation(obs map[string]any) error {
 	p, err := json.TFParser.Marshal(obs)
 	if err != nil {
 		return err
@@ -42,16 +42,16 @@ func (tr *Auditing) SetObservation(obs map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Status.AtProvider)
 }
 
-// GetID returns ID of underlying Terraform resource of this Auditing
-func (tr *Auditing) GetID() string {
+// GetID returns ID of underlying Terraform resource of this DBRole
+func (tr *DBRole) GetID() string {
 	if tr.Status.AtProvider.ID == nil {
 		return ""
 	}
 	return *tr.Status.AtProvider.ID
 }
 
-// GetParameters of this Auditing
-func (tr *Auditing) GetParameters() (map[string]any, error) {
+// GetParameters of this DBRole
+func (tr *DBRole) GetParameters() (map[string]any, error) {
 	p, err := json.TFParser.Marshal(tr.Spec.ForProvider)
 	if err != nil {
 		return nil, err
@@ -60,8 +60,8 @@ func (tr *Auditing) GetParameters() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(p, &base)
 }
 
-// SetParameters for this Auditing
-func (tr *Auditing) SetParameters(params map[string]any) error {
+// SetParameters for this DBRole
+func (tr *DBRole) SetParameters(params map[string]any) error {
 	p, err := json.TFParser.Marshal(params)
 	if err != nil {
 		return err
@@ -69,10 +69,10 @@ func (tr *Auditing) SetParameters(params map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Spec.ForProvider)
 }
 
-// LateInitialize this Auditing using its observed tfState.
+// LateInitialize this DBRole using its observed tfState.
 // returns True if there are any spec changes for the resource.
-func (tr *Auditing) LateInitialize(attrs []byte) (bool, error) {
-	params := &AuditingParameters{}
+func (tr *DBRole) LateInitialize(attrs []byte) (bool, error) {
+	params := &DBRoleParameters{}
 	if err := json.TFParser.Unmarshal(attrs, params); err != nil {
 		return false, errors.Wrap(err, "failed to unmarshal Terraform state parameters for late-initialization")
 	}
@@ -83,22 +83,22 @@ func (tr *Auditing) LateInitialize(attrs []byte) (bool, error) {
 }
 
 // GetTerraformSchemaVersion returns the associated Terraform schema version
-func (tr *Auditing) GetTerraformSchemaVersion() int {
+func (tr *DBRole) GetTerraformSchemaVersion() int {
 	return 0
 }
 
-// GetTerraformResourceType returns Terraform resource type for this Team
-func (mg *Team) GetTerraformResourceType() string {
-	return "mongodbatlas_team"
+// GetTerraformResourceType returns Terraform resource type for this User
+func (mg *User) GetTerraformResourceType() string {
+	return "mongodbatlas_database_user"
 }
 
-// GetConnectionDetailsMapping for this Team
-func (tr *Team) GetConnectionDetailsMapping() map[string]string {
-	return nil
+// GetConnectionDetailsMapping for this User
+func (tr *User) GetConnectionDetailsMapping() map[string]string {
+	return map[string]string{"password": "spec.forProvider.passwordSecretRef"}
 }
 
-// GetObservation of this Team
-func (tr *Team) GetObservation() (map[string]any, error) {
+// GetObservation of this User
+func (tr *User) GetObservation() (map[string]any, error) {
 	o, err := json.TFParser.Marshal(tr.Status.AtProvider)
 	if err != nil {
 		return nil, err
@@ -107,8 +107,8 @@ func (tr *Team) GetObservation() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(o, &base)
 }
 
-// SetObservation for this Team
-func (tr *Team) SetObservation(obs map[string]any) error {
+// SetObservation for this User
+func (tr *User) SetObservation(obs map[string]any) error {
 	p, err := json.TFParser.Marshal(obs)
 	if err != nil {
 		return err
@@ -116,16 +116,16 @@ func (tr *Team) SetObservation(obs map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Status.AtProvider)
 }
 
-// GetID returns ID of underlying Terraform resource of this Team
-func (tr *Team) GetID() string {
+// GetID returns ID of underlying Terraform resource of this User
+func (tr *User) GetID() string {
 	if tr.Status.AtProvider.ID == nil {
 		return ""
 	}
 	return *tr.Status.AtProvider.ID
 }
 
-// GetParameters of this Team
-func (tr *Team) GetParameters() (map[string]any, error) {
+// GetParameters of this User
+func (tr *User) GetParameters() (map[string]any, error) {
 	p, err := json.TFParser.Marshal(tr.Spec.ForProvider)
 	if err != nil {
 		return nil, err
@@ -134,8 +134,8 @@ func (tr *Team) GetParameters() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(p, &base)
 }
 
-// SetParameters for this Team
-func (tr *Team) SetParameters(params map[string]any) error {
+// SetParameters for this User
+func (tr *User) SetParameters(params map[string]any) error {
 	p, err := json.TFParser.Marshal(params)
 	if err != nil {
 		return err
@@ -143,10 +143,10 @@ func (tr *Team) SetParameters(params map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Spec.ForProvider)
 }
 
-// LateInitialize this Team using its observed tfState.
+// LateInitialize this User using its observed tfState.
 // returns True if there are any spec changes for the resource.
-func (tr *Team) LateInitialize(attrs []byte) (bool, error) {
-	params := &TeamParameters{}
+func (tr *User) LateInitialize(attrs []byte) (bool, error) {
+	params := &UserParameters{}
 	if err := json.TFParser.Unmarshal(attrs, params); err != nil {
 		return false, errors.Wrap(err, "failed to unmarshal Terraform state parameters for late-initialization")
 	}
@@ -157,6 +157,228 @@ func (tr *Team) LateInitialize(attrs []byte) (bool, error) {
 }
 
 // GetTerraformSchemaVersion returns the associated Terraform schema version
-func (tr *Team) GetTerraformSchemaVersion() int {
+func (tr *User) GetTerraformSchemaVersion() int {
+	return 0
+}
+
+// GetTerraformResourceType returns Terraform resource type for this Organization
+func (mg *Organization) GetTerraformResourceType() string {
+	return "mongodbatlas_organization"
+}
+
+// GetConnectionDetailsMapping for this Organization
+func (tr *Organization) GetConnectionDetailsMapping() map[string]string {
+	return map[string]string{"private_key": "status.atProvider.privateKey", "public_key": "status.atProvider.publicKey"}
+}
+
+// GetObservation of this Organization
+func (tr *Organization) GetObservation() (map[string]any, error) {
+	o, err := json.TFParser.Marshal(tr.Status.AtProvider)
+	if err != nil {
+		return nil, err
+	}
+	base := map[string]any{}
+	return base, json.TFParser.Unmarshal(o, &base)
+}
+
+// SetObservation for this Organization
+func (tr *Organization) SetObservation(obs map[string]any) error {
+	p, err := json.TFParser.Marshal(obs)
+	if err != nil {
+		return err
+	}
+	return json.TFParser.Unmarshal(p, &tr.Status.AtProvider)
+}
+
+// GetID returns ID of underlying Terraform resource of this Organization
+func (tr *Organization) GetID() string {
+	if tr.Status.AtProvider.ID == nil {
+		return ""
+	}
+	return *tr.Status.AtProvider.ID
+}
+
+// GetParameters of this Organization
+func (tr *Organization) GetParameters() (map[string]any, error) {
+	p, err := json.TFParser.Marshal(tr.Spec.ForProvider)
+	if err != nil {
+		return nil, err
+	}
+	base := map[string]any{}
+	return base, json.TFParser.Unmarshal(p, &base)
+}
+
+// SetParameters for this Organization
+func (tr *Organization) SetParameters(params map[string]any) error {
+	p, err := json.TFParser.Marshal(params)
+	if err != nil {
+		return err
+	}
+	return json.TFParser.Unmarshal(p, &tr.Spec.ForProvider)
+}
+
+// LateInitialize this Organization using its observed tfState.
+// returns True if there are any spec changes for the resource.
+func (tr *Organization) LateInitialize(attrs []byte) (bool, error) {
+	params := &OrganizationParameters{}
+	if err := json.TFParser.Unmarshal(attrs, params); err != nil {
+		return false, errors.Wrap(err, "failed to unmarshal Terraform state parameters for late-initialization")
+	}
+	opts := []resource.GenericLateInitializerOption{resource.WithZeroValueJSONOmitEmptyFilter(resource.CNameWildcard)}
+
+	li := resource.NewGenericLateInitializer(opts...)
+	return li.LateInitialize(&tr.Spec.ForProvider, params)
+}
+
+// GetTerraformSchemaVersion returns the associated Terraform schema version
+func (tr *Organization) GetTerraformSchemaVersion() int {
+	return 0
+}
+
+// GetTerraformResourceType returns Terraform resource type for this Project
+func (mg *Project) GetTerraformResourceType() string {
+	return "mongodbatlas_project"
+}
+
+// GetConnectionDetailsMapping for this Project
+func (tr *Project) GetConnectionDetailsMapping() map[string]string {
+	return nil
+}
+
+// GetObservation of this Project
+func (tr *Project) GetObservation() (map[string]any, error) {
+	o, err := json.TFParser.Marshal(tr.Status.AtProvider)
+	if err != nil {
+		return nil, err
+	}
+	base := map[string]any{}
+	return base, json.TFParser.Unmarshal(o, &base)
+}
+
+// SetObservation for this Project
+func (tr *Project) SetObservation(obs map[string]any) error {
+	p, err := json.TFParser.Marshal(obs)
+	if err != nil {
+		return err
+	}
+	return json.TFParser.Unmarshal(p, &tr.Status.AtProvider)
+}
+
+// GetID returns ID of underlying Terraform resource of this Project
+func (tr *Project) GetID() string {
+	if tr.Status.AtProvider.ID == nil {
+		return ""
+	}
+	return *tr.Status.AtProvider.ID
+}
+
+// GetParameters of this Project
+func (tr *Project) GetParameters() (map[string]any, error) {
+	p, err := json.TFParser.Marshal(tr.Spec.ForProvider)
+	if err != nil {
+		return nil, err
+	}
+	base := map[string]any{}
+	return base, json.TFParser.Unmarshal(p, &base)
+}
+
+// SetParameters for this Project
+func (tr *Project) SetParameters(params map[string]any) error {
+	p, err := json.TFParser.Marshal(params)
+	if err != nil {
+		return err
+	}
+	return json.TFParser.Unmarshal(p, &tr.Spec.ForProvider)
+}
+
+// LateInitialize this Project using its observed tfState.
+// returns True if there are any spec changes for the resource.
+func (tr *Project) LateInitialize(attrs []byte) (bool, error) {
+	params := &ProjectParameters{}
+	if err := json.TFParser.Unmarshal(attrs, params); err != nil {
+		return false, errors.Wrap(err, "failed to unmarshal Terraform state parameters for late-initialization")
+	}
+	opts := []resource.GenericLateInitializerOption{resource.WithZeroValueJSONOmitEmptyFilter(resource.CNameWildcard)}
+
+	li := resource.NewGenericLateInitializer(opts...)
+	return li.LateInitialize(&tr.Spec.ForProvider, params)
+}
+
+// GetTerraformSchemaVersion returns the associated Terraform schema version
+func (tr *Project) GetTerraformSchemaVersion() int {
+	return 0
+}
+
+// GetTerraformResourceType returns Terraform resource type for this Teams
+func (mg *Teams) GetTerraformResourceType() string {
+	return "mongodbatlas_teams"
+}
+
+// GetConnectionDetailsMapping for this Teams
+func (tr *Teams) GetConnectionDetailsMapping() map[string]string {
+	return nil
+}
+
+// GetObservation of this Teams
+func (tr *Teams) GetObservation() (map[string]any, error) {
+	o, err := json.TFParser.Marshal(tr.Status.AtProvider)
+	if err != nil {
+		return nil, err
+	}
+	base := map[string]any{}
+	return base, json.TFParser.Unmarshal(o, &base)
+}
+
+// SetObservation for this Teams
+func (tr *Teams) SetObservation(obs map[string]any) error {
+	p, err := json.TFParser.Marshal(obs)
+	if err != nil {
+		return err
+	}
+	return json.TFParser.Unmarshal(p, &tr.Status.AtProvider)
+}
+
+// GetID returns ID of underlying Terraform resource of this Teams
+func (tr *Teams) GetID() string {
+	if tr.Status.AtProvider.ID == nil {
+		return ""
+	}
+	return *tr.Status.AtProvider.ID
+}
+
+// GetParameters of this Teams
+func (tr *Teams) GetParameters() (map[string]any, error) {
+	p, err := json.TFParser.Marshal(tr.Spec.ForProvider)
+	if err != nil {
+		return nil, err
+	}
+	base := map[string]any{}
+	return base, json.TFParser.Unmarshal(p, &base)
+}
+
+// SetParameters for this Teams
+func (tr *Teams) SetParameters(params map[string]any) error {
+	p, err := json.TFParser.Marshal(params)
+	if err != nil {
+		return err
+	}
+	return json.TFParser.Unmarshal(p, &tr.Spec.ForProvider)
+}
+
+// LateInitialize this Teams using its observed tfState.
+// returns True if there are any spec changes for the resource.
+func (tr *Teams) LateInitialize(attrs []byte) (bool, error) {
+	params := &TeamsParameters_2{}
+	if err := json.TFParser.Unmarshal(attrs, params); err != nil {
+		return false, errors.Wrap(err, "failed to unmarshal Terraform state parameters for late-initialization")
+	}
+	opts := []resource.GenericLateInitializerOption{resource.WithZeroValueJSONOmitEmptyFilter(resource.CNameWildcard)}
+
+	li := resource.NewGenericLateInitializer(opts...)
+	return li.LateInitialize(&tr.Spec.ForProvider, params)
+}
+
+// GetTerraformSchemaVersion returns the associated Terraform schema version
+func (tr *Teams) GetTerraformSchemaVersion() int {
 	return 0
 }

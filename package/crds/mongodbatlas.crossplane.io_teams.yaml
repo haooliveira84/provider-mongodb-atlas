@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: auditings.mongodbatlas.mongodbatlas.crossplane.io
+  name: teams.mongodbatlas.crossplane.io
 spec:
-  group: mongodbatlas.mongodbatlas.crossplane.io
+  group: mongodbatlas.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - mongodbatlas
-    kind: Auditing
-    listKind: AuditingList
-    plural: auditings
-    singular: auditing
+    kind: Teams
+    listKind: TeamsList
+    plural: teams
+    singular: teams
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,8 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Auditing is the Schema for the Auditings API. Provides a Auditing
-          resource.
+        description: Teams is the Schema for the Teamss API. Provides a Team resource.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -51,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: AuditingSpec defines the desired state of Auditing
+            description: TeamsSpec defines the desired state of Teams
             properties:
               deletionPolicy:
                 default: Delete
@@ -68,28 +67,22 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  auditAuthorizationSuccess:
-                    description: 'Indicates whether the auditing system captures successful
-                      authentication attempts for audit filters using the "atype"
-                      : "authCheck" auditing event. For more information, see auditAuthorizationSuccess.  Warning!
-                      Enabling Audit authorization successes can severely impact cluster
-                      performance. Enable this option with caution.'
-                    type: boolean
-                  auditFilter:
-                    description: JSON-formatted audit filter. For complete documentation
-                      on custom auditing filters, see Configure Audit Filters.
+                  name:
+                    description: The name of the team you want to create.
                     type: string
-                  enabled:
-                    description: Denotes whether or not the project associated with
-                      the {project_id} has database auditing enabled.  Defaults to
-                      false.
-                    type: boolean
-                  projectId:
-                    description: 'The unique ID for the project to configure auditing.
-                      Note: When changing this value to a different project_id it
-                      will delete the current audit settings for the original project
-                      that was assigned to.'
+                  orgId:
+                    description: The unique identifier for the organization you want
+                      to associate the team with.
                     type: string
+                  usernames:
+                    description: The Atlas usernames (email address). You can only
+                      add Atlas users who are part of the organization. Users who
+                      have not accepted an invitation to join the organization cannot
+                      be added as team members. There is a maximum of 250 Atlas users
+                      per team.
+                    items:
+                      type: string
+                    type: array
                 type: object
               managementPolicy:
                 default: FullControl
@@ -278,41 +271,38 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: projectId is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.projectId)
+            - message: name is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.name)
+            - message: orgId is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.orgId)
+            - message: usernames is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.usernames)
           status:
-            description: AuditingStatus defines the observed state of Auditing.
+            description: TeamsStatus defines the observed state of Teams.
             properties:
               atProvider:
                 properties:
-                  auditAuthorizationSuccess:
-                    description: 'Indicates whether the auditing system captures successful
-                      authentication attempts for audit filters using the "atype"
-                      : "authCheck" auditing event. For more information, see auditAuthorizationSuccess.  Warning!
-                      Enabling Audit authorization successes can severely impact cluster
-                      performance. Enable this option with caution.'
-                    type: boolean
-                  auditFilter:
-                    description: JSON-formatted audit filter. For complete documentation
-                      on custom auditing filters, see Configure Audit Filters.
-                    type: string
-                  configurationType:
-                    description: 'Denotes the configuration method for the audit filter.
-                      Possible values are:'
-                    type: string
-                  enabled:
-                    description: Denotes whether or not the project associated with
-                      the {project_id} has database auditing enabled.  Defaults to
-                      false.
-                    type: boolean
                   id:
                     type: string
-                  projectId:
-                    description: 'The unique ID for the project to configure auditing.
-                      Note: When changing this value to a different project_id it
-                      will delete the current audit settings for the original project
-                      that was assigned to.'
+                  name:
+                    description: The name of the team you want to create.
                     type: string
+                  orgId:
+                    description: The unique identifier for the organization you want
+                      to associate the team with.
+                    type: string
+                  teamId:
+                    description: The unique identifier for the team.
+                    type: string
+                  usernames:
+                    description: The Atlas usernames (email address). You can only
+                      add Atlas users who are part of the organization. Users who
+                      have not accepted an invitation to join the organization cannot
+                      be added as team members. There is a maximum of 250 Atlas users
+                      per team.
+                    items:
+                      type: string
+                    type: array
                 type: object
               conditions:
                 description: Conditions of the resource.
